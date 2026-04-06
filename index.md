@@ -10,7 +10,7 @@ status: active
 
 Self-evolving knowledge system maintained by Claude Code and Hermes. Read the [conventions](meta/conventions.md) for how this wiki works.
 
-**Pages:** 9 | **Active:** 9 | **Stubs:** 0 | **Last updated:** 2026-04-06
+**Pages:** 15 | **Active:** 15 | **Stubs:** 0 | **Last updated:** 2026-04-06
 
 ---
 
@@ -40,12 +40,18 @@ Architecture Decision Records — why we chose X over Y.
 | Page | Status | Tags |
 |---|---|---|
 | [No Turbopack](decisions/no-turbopack.md) | active | decision, nextjs, infrastructure |
+| [OpenRouter Over OpenAI Plus](decisions/openrouter-over-openai.md) | active | decision, infrastructure, cost |
+| [Model Strategy](decisions/model-strategy.md) | active | decision, hermes, cost, models |
 
 ## Patterns
 
 Reusable technical solutions and conventions.
 
-*No pages yet.*
+| Page | Status | Tags |
+|---|---|---|
+| [Agent Design Lessons](patterns/agent-design-lessons.md) | active | patterns, agents, cost, hermes |
+| [Agent Handoff Workflow](patterns/agent-handoff-workflow.md) | active | patterns, agents, workflow, hermes |
+| [MacBook SMB Automount](patterns/macbook-automount.md) | active | patterns, infrastructure, macos |
 
 ## Reference
 

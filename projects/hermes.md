@@ -60,6 +60,24 @@ Primary messaging platform. Uses `python-telegram-bot` library.
 - Cron job results delivered here
 - Chat ID: `8262919418`
 
+## Discovery & Curation Philosophy
+
+Hermes is Calvin's personal intelligence agent — finds signal in noise. The cron pipeline feeds The Bridge (a personal feed dashboard).
+
+**Quality rules:**
+- **3-5 genuinely interesting items** beats 15 mediocre links
+- **Summary, link, why it matters** — no raw dumps
+- **If nothing changed, say so** — "nothing newsworthy" beats filler
+- **Interest separation**: Home (AI/LLM news, coding, podcasts, audiobooks) vs Work (Copilot, enterprise AI, governance) kept in separate streams
+
+**What not to repeat from OpenClaw:**
+- Too-frequent sweeps (noise + context bloat) → fewer, higher-quality sweeps
+- Accumulated context between runs → fresh context each run
+- Complex multi-agent orchestration → single agent, single responsibility per run
+- Automation before reading experience → reading experience is priority #1
+
+See [agent design lessons](../patterns/agent-design-lessons.md) for the full cost/design analysis.
+
 ## Session Management
 
 - Sessions reset after 1440 idle minutes (24h) or at 4 AM daily
