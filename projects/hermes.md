@@ -2,9 +2,10 @@
 title: Hermes Agent
 tags: [hermes, agent, infrastructure]
 created: 2026-04-06
-updated: 2026-04-06
+updated: 2026-04-07
 status: active
 related:
+  - projects/the-bridge.md
   - ../systems/cron-pipeline.md
   - ../systems/mac-mini.md
   - ../systems/claude-code.md
@@ -59,6 +60,10 @@ Primary messaging platform. Uses `python-telegram-bot` library.
 - Formatting: MarkdownV2 with fallback to plain text
 - Cron job results delivered here
 - Chat ID: `8262919418`
+
+## Relationship to The Bridge
+
+Hermes produces data; [The Bridge](the-bridge.md) displays it. They are separate repos worked on in separate Claude sessions. Hermes owns the data contract — output format, file paths, job definitions. The Bridge is read-only and never drives Hermes behavior. If Bridge needs a new data shape, that's a handoff back to the Hermes session.
 
 ## Discovery & Curation Philosophy
 

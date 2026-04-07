@@ -3,6 +3,8 @@ title: The Bridge
 tags: [the-bridge, dashboard, hermes, next.js]
 created: 2026-04-07
 updated: 2026-04-07
+sources:
+  - session 2026-04-07 — documented separation of concerns and data contract
 status: active
 related:
   - ../projects/hermes.md
@@ -17,6 +19,28 @@ Personal intelligence feed dashboard powered by Hermes Agent. Reads cron output 
 **Repo:** `calvinmoltbot/the-bridge`
 **URL:** `http://100.90.11.37:3020` (Tailscale only, no auth)
 **Stack:** Next.js 16, React 19, Tailwind CSS v4, TypeScript
+
+## Separation of Concerns
+
+The Bridge is **read-only** — it displays what Hermes produces but never drives Hermes behavior. These are two separate repos, worked on in separate Claude sessions:
+
+| Concern | Repo | Session focus |
+|---|---|---|
+| **What the agent does** (cron jobs, skills, prompts, feeds) | `hermes-agent` (~/.hermes/) | Hermes session |
+| **How Calvin reviews the output** (dashboard UI, layout, design) | `the-bridge` | This session |
+
+If a Bridge feature implies Hermes needs to change (e.g. new data format, new job type), that's a **handoff** — note it as an issue, don't implement it here.
+
+## Data Contract
+
+Bridge reads Hermes output via filesystem. No API, no database of its own (except read-only SQLite).
+
+| Bridge reads | Hermes writes | Format |
+|---|---|---|
+| `~/.hermes/cron/output/{jobId}/{datetime}.md` | Cron job results | Markdown with `**Run Time:**` header, `## Response` / `## Error` sections |
+| `~/.hermes/cron/jobs.json` | Job definitions | JSON: `{ jobs: [{ id, name, schedule, state, last_run_at, ... }] }` |
+| `~/.hermes/gateway_state.json` | Gateway status | JSON: `{ pid, gateway_state, platforms: { telegram: { state } } }` |
+| `~/.hermes/state.db` | Token usage | SQLite: `sessions` table (started_at, estimated_cost_usd, input/output_tokens) |
 
 ## Architecture
 
