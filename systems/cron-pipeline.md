@@ -2,7 +2,7 @@
 title: Cron Pipeline
 tags: [hermes, infrastructure, automation]
 created: 2026-04-06
-updated: 2026-04-06
+updated: 2026-04-07
 status: active
 related:
   - ../projects/hermes.md
@@ -53,9 +53,24 @@ Each run starts a **fresh session** with zero context — no memory of previous 
 2. Add a job entry to `~/.hermes/cron/jobs.json` with: id, name, prompt, schedule (cron expression), script path, delivery platform
 3. The scheduler picks it up automatically
 
+## Content Gate (Dedup)
+
+Added 2026-04-07. A two-layer system that prevents wasting LLM tokens on duplicate content:
+
+**Layer 1 — Empty stdout protocol:** If a pre-run script outputs nothing (empty stdout, exit 0), the scheduler skips the LLM entirely. Scripts are responsible for their own dedup:
+- `youtube_feeds.py` tracks seen video IDs in `~/.hermes/cron/state/youtube_seen.json`
+- `newsboat_process.py` uses Newsboat's built-in unread flags
+
+**Layer 2 — Hash safety net:** The scheduler hashes script output (SHA-256, 16-char prefix) and compares against `last_script_hash` stored in the job metadata. Identical output = skip.
+
+**Job metadata fields:** `last_script_hash`, `consecutive_skips`, `last_skip_at`. Skipped runs show as `last_status: "skipped"` and are visible in `hermes cron list`.
+
+**Key rule:** Script errors are never gated — if a script fails, the LLM still runs so it can report the failure.
+
 ## Key Lessons
 
 - **No context accumulation** — fresh session every run
 - **Script does the heavy lifting** — the LLM only synthesizes, never fetches
 - **Keep output short** — Telegram messages should be scannable
 - **Preserve links** — markdown links in script output must survive LLM synthesis
+- **Don't waste tokens on stale content** — content gate skips LLM when nothing is new
