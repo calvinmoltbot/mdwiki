@@ -33,7 +33,7 @@ Interactive Typeform-style flow capturing Lily's business plan across 5 sections
 
 **Tech:** Next.js 16.2.3 (App Router, webpack mode), React 19, Tailwind v4, shadcn/ui (base-ui/react), Framer Motion, Zustand 5, Drizzle ORM + Neon Postgres, OpenRouter for AI vision models.
 
-**Current state (2026-04-10):** Core features functional with real Neon DB. Inventory tracker (full CRUD with photos, edit dialog, status transitions), AI Description Generator (OpenRouter multi-model), and Profit Dashboard (charts, breakdowns by category/source/month) are built. 75 tests across 7 files. DATABASE_URL on Vercel production.
+**Current state (2026-04-10):** All core features built and functional with real Neon DB. Morning Dashboard, Inventory (full CRUD with photos), AI Description Generator, and Profit Dashboard (with revenue targets) are complete. 82 tests across 8 files. Next: Deal Finder and Price Estimator (research done — Apify + LLM hybrid recommended).
 
 Issues tracked in `calvinmoltbot/relist`:
 
@@ -44,17 +44,24 @@ Issues tracked in `calvinmoltbot/relist`:
 | #3 | Inventory item edit dialog | **Closed** |
 | #4 | Fix status dropdown (base-ui render prop) | **Closed** |
 | #5 | Profit Dashboard | **Closed** |
-| #6 | Deal Finder | Open |
-| #7 | Price Intelligence DB | Open |
-| #8 | Morning Dashboard | Open |
+| #6 | Deal Finder | Open — research done, Apify approach recommended |
+| #7 | Price Intelligence DB | Open — research done, on-demand via Apify |
+| #8 | Morning Dashboard | **Closed** |
+| #9 | Price Estimator | Open — hybrid Apify + LLM approach |
+| #10 | Revenue target settings (configurable) | Open |
+| #11 | Cross-platform listing tracker | Open — low priority |
+| #12 | Clean up mock store and unused imports | Open |
 
-Priority from Lily's answers (original issue refs from vinted repo):
-1. **AI Description Generator** (#18) — built, needs real photo testing (#2)
-2. **Inventory Tracker** (#5) — fully functional with real DB, photos, edit dialog
-3. **Profit Dashboard** (#6) — built with charts, category/source/month breakdowns
-4. **Price Intelligence DB** (#16) — foundation for deal finder
-5. **Deal Finder** (#15) — her dream feature
-6. **Morning Dashboard** (#20) — daily briefing
+**Research saved:** `markviewer/relist/2026-04-10-deal-finder-price-estimator-approaches.md`
+
+Priority from Lily's answers:
+1. **AI Description Generator** — built, needs real photo testing (#2)
+2. **Inventory Tracker** — fully functional with real DB, photos, edit dialog
+3. **Profit Dashboard** — built with revenue target tracking (£3k/mo)
+4. **Morning Dashboard** — built with action items, revenue progress, hourly rate
+5. **Price Estimator** (#9) — next to build. Hybrid: Apify comparables + LLM reasoning
+6. **Deal Finder** (#6) — Phase 1: Apify polling + alerts. Phase 2: Chrome extension overlay
+7. **Price Intelligence DB** (#7) — on-demand Apify caching in price_data table
 
 ## Key Business Context
 
