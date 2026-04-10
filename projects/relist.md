@@ -1,7 +1,7 @@
 ---
 title: ReList — Vinted Reseller SaaS
 created: 2026-04-09
-updated: 2026-04-09
+updated: 2026-04-10
 tags: [vinted, saas, reselling, lily]
 ---
 
@@ -29,19 +29,32 @@ Interactive Typeform-style flow capturing Lily's business plan across 5 sections
 
 **Tech:** Next.js 16, Tailwind, shadcn/ui, Framer Motion, zustand, Neon Postgres, Vercel
 
-## Phase 2 (relist repo) — Planned
+## Phase 2 (relist repo) — In Progress
 
-Priority order based on Lily's actual answers:
+**Tech:** Next.js 16.2.3 (App Router, webpack mode), React 19, Tailwind v4, shadcn/ui (base-ui/react), Framer Motion, Zustand 5, Drizzle ORM + Neon Postgres, OpenRouter for AI vision models.
 
-1. **AI Description Generator** (#18) — her #1 pain point
-2. **Inventory Tracker** (#5) — must beat her Notion spreadsheet
+**Current state (2026-04-10):** Scaffolded and partially functional. Inventory tracker (CRUD with mock in-memory store) and AI Description Generator (OpenRouter multi-model) are built. Polish pass done on describe page. Not yet connected to real DB.
+
+Issues tracked in `calvinmoltbot/relist`:
+
+| # | Feature | Status |
+|---|---------|--------|
+| #1 | Connect Neon DB / Drizzle migrations | Open |
+| #2 | Test AI description e2e with real photo | Open |
+| #3 | Inventory item edit dialog | Open |
+| #4 | Fix status dropdown (base-ui render prop) | Open — bug |
+| #5 | Profit Dashboard | Open |
+| #6 | Deal Finder | Open |
+| #7 | Price Intelligence DB | Open |
+| #8 | Morning Dashboard | Open |
+
+Priority from Lily's answers (original issue refs from vinted repo):
+1. **AI Description Generator** (#18) — built, needs real testing
+2. **Inventory Tracker** (#5) — built with mock store, needs real DB
 3. **Profit Dashboard** (#6) — 65% margin target on £3k/mo
 4. **Price Intelligence DB** (#16) — foundation for deal finder
-5. **Price Estimator** (#11) — "how much should I sell this for?"
-6. **Deal Finder** (#15) — her dream feature: live feed of flippable listings
-7. **Morning Dashboard** (#20) — she'd use it as a morning routine
-
-Issues are tracked in `calvinmoltbot/vinted` repo (Phase 2 label).
+5. **Deal Finder** (#15) — her dream feature
+6. **Morning Dashboard** (#20) — daily briefing
 
 ## Key Business Context
 
@@ -57,6 +70,11 @@ Issues are tracked in `calvinmoltbot/vinted` repo (Phase 2 label).
 ## Gotchas
 
 - **Never use Supabase** — Calvin's rule. Use Neon Postgres (free via Vercel integration)
+- **shadcn/ui uses base-ui/react, NOT Radix** — `render` prop instead of `asChild`. SheetTrigger/DialogTrigger `render` prop is unreliable for custom components — use controlled open state with plain Button onClick instead (see pattern: `add-item-dialog.tsx`)
+- **Next.js 16 `allowedDevOrigins`** — Required in `next.config.ts` for cross-origin dev access. Without it, client JS hydration silently fails when accessing from non-localhost (e.g. Tailscale IP). Symptom: page renders server HTML but no interactivity.
+- **Next.js 16 default Turbopack** — Must pass `--webpack` to `next dev`. Turbopack has a bug where non-localhost connections hang (TCP connects but no HTTP response).
+- **globalThis for HMR persistence** — In-memory mock data stores need `globalThis.__storeName` pattern to survive webpack HMR reloads. Module-level variables get reset.
+- **OpenRouter for AI** — Using OpenAI SDK with `baseURL: https://openrouter.ai/api/v1`. 80x cheaper than direct Claude API. Key in `.env.local` as `OPENROUTER_API_KEY`.
 - **Vinted has no public API** — mobile API at `/api/v2/` has no DataDome protection (key insight from Apify research)
 - **Deal finder needs proxies** — residential, geo-matched to UK, ~£20/month
 - **TLS fingerprinting** — vanilla HTTP clients get detected, need `curl_cffi` or `tls-client`
