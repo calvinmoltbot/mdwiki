@@ -1,7 +1,7 @@
 ---
 title: ReList — Vinted Reseller SaaS
 created: 2026-04-09
-updated: 2026-04-10
+updated: 2026-04-10b
 tags: [vinted, saas, reselling, lily]
 ---
 
@@ -33,7 +33,7 @@ Interactive Typeform-style flow capturing Lily's business plan across 5 sections
 
 **Tech:** Next.js 16.2.3 (App Router, webpack mode), React 19, Tailwind v4, shadcn/ui (base-ui/react), Framer Motion, Zustand 5, Drizzle ORM + Neon Postgres, OpenRouter for AI vision models.
 
-**Current state (2026-04-10):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import), Describe page (polished, lightbox, dropdowns), Profit Dashboard (revenue targets, charts). Price data API + Chrome extension scaffold built (zero-cost approach — passive data collection from Lily's browsing). 89 tests across 9 files. Lily's 50 real sold items imported.
+**Current state (2026-04-10):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import with duplicate prevention), Describe page (polished, lightbox, dropdowns), Profit Dashboard (revenue targets, charts), Help system (searchable /help page, 28 entries). Price data API + Chrome extension scaffold built (zero-cost approach — passive data collection from Lily's browsing). 89 tests across 9 files. Lily's 50 real sold items imported (49 shipped, 1 sold).
 
 Issues tracked in `calvinmoltbot/relist`:
 
@@ -53,17 +53,16 @@ Issues tracked in `calvinmoltbot/relist`:
 | #12 | Clean up mock store | **Closed** |
 | #13 | Chrome extension scaffold | **Closed** — built, needs DOM selector testing |
 | #14 | Price data API endpoints | **Closed** |
-| #15 | Help system and documentation | Open |
+| #15 | Help system and documentation | **Closed** — searchable /help page, 28 entries, 7 groups |
 
 **Research saved:** `markviewer/relist/2026-04-10-deal-finder-price-estimator-approaches.md`
 
 **Strategy shift:** Dropped Apify (too expensive for a starting business). Using zero-cost Chrome extension that passively collects price data from Lily's normal Vinted browsing.
 
 Priority:
-1. **Help system / docs** (#15) — next session
-2. **Deal Finder** (#6) — test Chrome extension on real Vinted pages, tune DOM selectors
-3. **Price Estimator** (#9) — needs price data from extension first
-4. **Revenue target settings** (#10) — currently hardcoded to £3k/mo
+1. **Deal Finder** (#6) — test Chrome extension on real Vinted pages, tune DOM selectors
+2. **Price Estimator** (#9) — needs price data from extension first
+3. **Revenue target settings** (#10) — currently hardcoded to £3k/mo
 
 ## Key Business Context
 
