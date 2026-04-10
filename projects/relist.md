@@ -33,25 +33,25 @@ Interactive Typeform-style flow capturing Lily's business plan across 5 sections
 
 **Tech:** Next.js 16.2.3 (App Router, webpack mode), React 19, Tailwind v4, shadcn/ui (base-ui/react), Framer Motion, Zustand 5, Drizzle ORM + Neon Postgres, OpenRouter for AI vision models.
 
-**Current state (2026-04-10):** Scaffolded and partially functional. Inventory tracker (CRUD with mock in-memory store) and AI Description Generator (OpenRouter multi-model) are built. Polish pass done on describe page. Not yet connected to real DB.
+**Current state (2026-04-10):** Core features functional with real Neon DB. Inventory tracker (full CRUD with photos, edit dialog, status transitions), AI Description Generator (OpenRouter multi-model), and Profit Dashboard (charts, breakdowns by category/source/month) are built. 75 tests across 7 files. DATABASE_URL on Vercel production.
 
 Issues tracked in `calvinmoltbot/relist`:
 
 | # | Feature | Status |
 |---|---------|--------|
-| #1 | Connect Neon DB / Drizzle migrations | Open |
+| #1 | Connect Neon DB / Drizzle migrations | **Closed** |
 | #2 | Test AI description e2e with real photo | Open |
-| #3 | Inventory item edit dialog | Open |
-| #4 | Fix status dropdown (base-ui render prop) | Open — bug |
-| #5 | Profit Dashboard | Open |
+| #3 | Inventory item edit dialog | **Closed** |
+| #4 | Fix status dropdown (base-ui render prop) | **Closed** |
+| #5 | Profit Dashboard | **Closed** |
 | #6 | Deal Finder | Open |
 | #7 | Price Intelligence DB | Open |
 | #8 | Morning Dashboard | Open |
 
 Priority from Lily's answers (original issue refs from vinted repo):
-1. **AI Description Generator** (#18) — built, needs real testing
-2. **Inventory Tracker** (#5) — built with mock store, needs real DB
-3. **Profit Dashboard** (#6) — 65% margin target on £3k/mo
+1. **AI Description Generator** (#18) — built, needs real photo testing (#2)
+2. **Inventory Tracker** (#5) — fully functional with real DB, photos, edit dialog
+3. **Profit Dashboard** (#6) — built with charts, category/source/month breakdowns
 4. **Price Intelligence DB** (#16) — foundation for deal finder
 5. **Deal Finder** (#15) — her dream feature
 6. **Morning Dashboard** (#20) — daily briefing
