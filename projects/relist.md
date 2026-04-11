@@ -1,7 +1,7 @@
 ---
 title: ReList — Vinted Reseller SaaS
 created: 2026-04-09
-updated: 2026-04-10b
+updated: 2026-04-11
 tags: [vinted, saas, reselling, lily]
 ---
 
@@ -33,7 +33,7 @@ Interactive Typeform-style flow capturing Lily's business plan across 5 sections
 
 **Tech:** Next.js 16.2.3 (App Router, webpack mode), React 19, Tailwind v4, shadcn/ui (base-ui/react), Framer Motion, Zustand 5, Drizzle ORM + Neon Postgres, OpenRouter for AI vision models.
 
-**Current state (2026-04-10):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import with duplicate prevention), Describe page (polished, lightbox, dropdowns), Profit Dashboard (revenue targets, charts), Help system (searchable /help page, 28 entries). Price data API + Chrome extension scaffold built (zero-cost approach — passive data collection from Lily's browsing). 89 tests across 9 files. Lily's 50 real sold items imported (49 shipped, 1 sold).
+**Current state (2026-04-11):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import, bulk date editing), Describe page (polished, lightbox, dropdowns), Financials (was Profit — now has 3 tabs: Overview with date filtering + MoM deltas, Breakdown, Inventory Health with aging/dead stock), Help system, Settings (configurable targets). DB: transactions table active (auto-created on sell, with shipping/fees), expenses table ready, user_settings table. Price data API + Chrome extension scaffold. 48 sold items imported.
 
 Issues tracked in `calvinmoltbot/relist`:
 
@@ -48,21 +48,28 @@ Issues tracked in `calvinmoltbot/relist`:
 | #7 | Price Intelligence DB | Open — price data API built, needs extension testing |
 | #8 | Morning Dashboard | **Closed** |
 | #9 | Price Estimator | Open — local price data + free LLM |
-| #10 | Revenue target settings (configurable) | Open |
+| #10 | Revenue target settings (configurable) | **Closed** — Settings page with configurable targets |
 | #11 | Cross-platform listing tracker | Open — low priority |
 | #12 | Clean up mock store | **Closed** |
 | #13 | Chrome extension scaffold | **Closed** — built, needs DOM selector testing |
 | #14 | Price data API endpoints | **Closed** |
 | #15 | Help system and documentation | **Closed** — searchable /help page, 28 entries, 7 groups |
+| #16 | Authentication + dev bypass | Open |
+| #17 | Expense tracking UI and API | Open — expenses table exists, needs UI |
+| #18 | Tax & Export tab — HMRC threshold + CSV export | Open |
 
 **Research saved:** `markviewer/relist/2026-04-10-deal-finder-price-estimator-approaches.md`
 
 **Strategy shift:** Dropped Apify (too expensive for a starting business). Using zero-cost Chrome extension that passively collects price data from Lily's normal Vinted browsing.
 
+**Financials plan:** `markviewer/relist/2026-04-11-financials-upgrade-plan.md`
+
 Priority:
-1. **Deal Finder** (#6) — test Chrome extension on real Vinted pages, tune DOM selectors
-2. **Price Estimator** (#9) — needs price data from extension first
-3. **Revenue target settings** (#10) — currently hardcoded to £3k/mo
+1. **Expense tracking** (#17) — expenses table exists, needs UI + API + net profit integration
+2. **Tax & Export** (#18) — HMRC threshold tracker, CSV export for Self Assessment
+3. **Auth** (#16) — before Lily uses it with real data
+4. **Deal Finder** (#6) — test Chrome extension on real Vinted pages
+5. **Price Estimator** (#9) — needs price data from extension first
 
 ## Key Business Context
 
