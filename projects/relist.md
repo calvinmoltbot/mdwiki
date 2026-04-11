@@ -33,7 +33,7 @@ Interactive Typeform-style flow capturing Lily's business plan across 5 sections
 
 **Tech:** Next.js 16.2.3 (App Router, webpack mode), React 19, Tailwind v4, shadcn/ui (base-ui/react), Framer Motion, Zustand 5, Drizzle ORM + Neon Postgres, OpenRouter for AI vision models.
 
-**Current state (2026-04-11):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import, bulk date editing), Describe page (polished, lightbox, dropdowns), Financials (was Profit — now has 3 tabs: Overview with date filtering + MoM deltas, Breakdown, Inventory Health with aging/dead stock), Help system, Settings (configurable targets). DB: transactions table active (auto-created on sell, with shipping/fees), expenses table ready, user_settings table. Price data API + Chrome extension scaffold. 48 sold items imported.
+**Current state (2026-04-11):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import, bulk date editing, **Smart Table view with bulk actions, Quick Log floating button**), Describe page (polished, lightbox, dropdowns), Financials (was Profit — now has 3 tabs: Overview with date filtering + MoM deltas, Breakdown, Inventory Health with aging/dead stock — **mobile responsive**), Help system, Settings (configurable targets). DB: transactions table active (auto-created on sell, with shipping/fees), expenses table ready, user_settings table, **vintedUrl field on items**. Price data API + Chrome extension (**Send to ReList working e2e — extracts data + photos from Vinted pages**). 48 sold items imported. **CORS middleware added** for extension API access.
 
 Issues tracked in `calvinmoltbot/relist`:
 
@@ -57,6 +57,18 @@ Issues tracked in `calvinmoltbot/relist`:
 | #16 | Authentication + dev bypass | Open |
 | #17 | Expense tracking UI and API | Open — expenses table exists, needs UI |
 | #18 | Tax & Export tab — HMRC threshold + CSV export | Open |
+| #19 | Smart Table view with bulk actions | **Closed** — checkbox select, inline edit, bulk status/date/price |
+| #20 | Quick Log — fast-path for sales/status | **Closed** — floating action button, 4 modes, autocomplete |
+| #21 | Extension "Send to ReList" + photo capture | **Closed** — tested e2e, validated Vinted DOM selectors |
+| #22 | Bulk photo backfill from spreadsheet URLs | Open — fetch photos for existing items |
+| #23 | Revolut statement import + payout rec | Open — later |
+| #24 | Mobile-responsive financials | **Closed** — Dashboard + Financials pages |
+| #19 | Smart Table view with bulk actions | Open — checkbox select, inline edit, bulk status/date/price |
+| #20 | Quick Log — fast-path for sales/status | Open — floating action, autocomplete, 10-second sale logging |
+| #21 | Extension "Send to ReList" + photo capture | Open — extends #13, one-click item import from Vinted |
+| #22 | Bulk photo backfill from spreadsheet URLs | Open — fetch photos for 48 existing items |
+| #23 | Revolut statement import + payout rec | Open — later, needs clean sales data first |
+| #24 | Mobile-responsive financials | Open — Dashboard + Financials pages on phone |
 
 **Research saved:** `markviewer/relist/2026-04-10-deal-finder-price-estimator-approaches.md`
 
@@ -64,12 +76,22 @@ Issues tracked in `calvinmoltbot/relist`:
 
 **Financials plan:** `markviewer/relist/2026-04-11-financials-upgrade-plan.md`
 
-Priority:
-1. **Expense tracking** (#17) — expenses table exists, needs UI + API + net profit integration
-2. **Tax & Export** (#18) — HMRC threshold tracker, CSV export for Self Assessment
-3. **Auth** (#16) — before Lily uses it with real data
-4. **Deal Finder** (#6) — test Chrome extension on real Vinted pages
-5. **Price Estimator** (#9) — needs price data from extension first
+**Workflow playground:** `playground-workflow.html` — interactive mockups for workflow solutions (Smart Table, Quick Log, Extension Send, Date Fixer, Photos). Serve with `python3 -m http.server 8765 --bind 0.0.0.0`.
+
+**Key decision (2026-04-11):** Workflow improvements before analytics features. Lily uses Vinted iPhone app primarily, ReList on laptop for tracking/analytics, mobile for quick financial checks. Chrome extension preferred over URL pasting for data import.
+
+Priority (revised 2026-04-11):
+1. **Smart Table + Bulk Actions** (#19) — highest impact, fixes bulk status/date/price editing
+2. **Quick Log** (#20) — daily workflow, 10-second sale logging
+3. **Extension "Send to ReList"** (#21) — eliminates double data entry for new items
+4. **Photo Backfill** (#22) — exported spreadsheet has Vinted URLs, bulk fetch photos
+5. **Expense tracking** (#17) — expenses table exists, needs UI + API + net profit integration
+6. **Tax & Export** (#18) — HMRC threshold tracker, CSV export for Self Assessment
+7. **Auth** (#16) — before Lily uses it with real data
+8. **Mobile-responsive financials** (#24) — alongside other work
+9. **Revolut reconciliation** (#23) — later, after clean data
+10. **Deal Finder** (#6) — test Chrome extension on real Vinted pages
+11. **Price Estimator** (#9) — needs price data from extension first
 
 ## Key Business Context
 
