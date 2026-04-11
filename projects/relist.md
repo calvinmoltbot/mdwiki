@@ -1,7 +1,7 @@
 ---
 title: ReList — Vinted Reseller SaaS
 created: 2026-04-09
-updated: 2026-04-11
+updated: 2026-04-12
 tags: [vinted, saas, reselling, lily]
 ---
 
@@ -33,7 +33,7 @@ Interactive Typeform-style flow capturing Lily's business plan across 5 sections
 
 **Tech:** Next.js 16.2.3 (App Router, webpack mode), React 19, Tailwind v4, shadcn/ui (base-ui/react), Framer Motion, Zustand 5, Drizzle ORM + Neon Postgres, OpenRouter for AI vision models.
 
-**Current state (2026-04-11):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import, bulk date editing, **Smart Table view with bulk actions, Quick Log floating button**), Describe page (polished, lightbox, dropdowns), Financials (was Profit — now has 3 tabs: Overview with date filtering + MoM deltas, Breakdown, Inventory Health with aging/dead stock — **mobile responsive**), Help system, Settings (configurable targets). DB: transactions table active (auto-created on sell, with shipping/fees), expenses table ready, user_settings table, **vintedUrl field on items**. Price data API + Chrome extension (**Send to ReList working e2e — extracts data + photos from Vinted pages**). 48 sold items imported. **CORS middleware added** for extension API access.
+**Current state (2026-04-11):** All core features built. Morning Dashboard, Inventory (full CRUD, photos, AI descriptions, xlsx/JSON import, **Smart Table view as default with always-visible bulk actions, Quick Log floating button**), Describe page (polished, lightbox, dropdowns), Financials (was Profit — now has 3 tabs: Overview with date filtering + MoM deltas, Breakdown, Inventory Health with aging/dead stock — **mobile responsive**), Help system, Settings (configurable targets). DB: transactions table active (auto-created on sell, with shipping/fees — **fully editable via edit dialog and bulk Set Fees**), expenses table ready, user_settings table, **vintedUrl field on items**. Price data API + Chrome extension (**Send to ReList working e2e — extracts data + photos from Vinted pages**). 48 sold items imported. **CORS middleware added** for extension API access. **Status reversals** create credit transactions instead of deleting (sold/shipped → sourced/listed with warning).
 
 Issues tracked in `calvinmoltbot/relist`:
 
