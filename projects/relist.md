@@ -63,6 +63,7 @@ Issues tracked in `calvinmoltbot/relist`:
 | #22 | Bulk photo backfill from spreadsheet URLs | Open — fetch photos for existing items |
 | #23 | Revolut statement import + payout rec | Open — later |
 | #24 | Mobile-responsive financials | **Closed** — Dashboard + Financials pages |
+| #25 | Plan My Day — daily workflow kanban | **Closed** — 3-column kanban (Ship/Update/Review), dashboard redesigned |
 | #19 | Smart Table view with bulk actions | Open — checkbox select, inline edit, bulk status/date/price |
 | #20 | Quick Log — fast-path for sales/status | Open — floating action, autocomplete, 10-second sale logging |
 | #21 | Extension "Send to ReList" + photo capture | Open — extends #13, one-click item import from Vinted |
