@@ -45,6 +45,7 @@ Next.js 16.2.3 (App Router, **webpack mode — not Turbopack**), React 19, Tailw
 - **HMR persistence** — in-memory mock stores need `globalThis.__storeName` to survive webpack HMR.
 - **OpenRouter for AI** — OpenAI SDK with `baseURL: https://openrouter.ai/api/v1`. ~80× cheaper than direct Claude. Key: `OPENROUTER_API_KEY`.
 - **Vinted has no public API / export** — mobile `/api/v2/` has no DataDome but needs residential UK proxies (~£20/mo) and TLS-fingerprint-aware clients (`curl_cffi` / `tls-client`). Strategy shift (2026-04-10): dropped Apify, use zero-cost Chrome extension that passively collects price data from Lily's normal browsing. Sold listings aren't accessible — infer sales from items that disappear.
+- **Sticky table headers** — `position: sticky` on a `<th>` resolves against the nearest scrolling ancestor. If the table wrapper has `overflow-x-auto`, sticky latches onto it (non-scrolling vertically) and the header never pins. Fix: the table wrapper itself must be the vertical scroll container (`flex-1 min-h-0 overflow-y-auto`), with the page using `h-full flex-col` so the wrapper can claim remaining height.
 - **Vinted scraper lives separately** — browser console scraper built by Claude CoWork (`Data/vinted_scraper_handover.md`). ReList imports output via xlsx or JSON paste.
 
 ## Research
