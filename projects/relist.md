@@ -1,7 +1,7 @@
 ---
 title: ReList — Vinted Reseller SaaS
 created: 2026-04-09
-updated: 2026-04-12
+updated: 2026-04-14
 tags: [vinted, saas, reselling, lily]
 ---
 
@@ -20,7 +20,9 @@ Two separate repos/deploys:
 
 For live feature state and priorities, use `gh issue list` — not this page.
 
-Dashboard redesign (2026-04-12): "Today's Flow" kanban (Ship / Update / Review) on left, Performance panel on right with real 7-day sparkline + rolling 7-day-vs-weekly-target pace card. Daily-plan data folded into `/api/dashboard` for single round trip.
+Dashboard redesign (2026-04-12): "Today's Flow" kanban (Ship / Update / Review) on left, Performance panel on right with real 7-day sparkline + rolling 7-day-vs-weekly-target pace card. Daily-plan data folded into `/api/dashboard` for single round trip. Markup scratchpad (2026-04-13) sits under the kanban — cost input + markup slider with 100/150/200/300% presets → list price & profit.
+
+Backup (2026-04-13): `GET /api/backup` dumps all tables as one JSON file (Settings → "Download backup"). Each download upserts `last_backup_at` in `user_settings`; Dashboard shows an amber nudge banner when it's been 14+ days or never (3-day localStorage dismiss). No in-app restore yet — planned in #28 with a mandatory "Are you sure" confirm.
 
 ## Tech
 
@@ -46,7 +48,9 @@ Next.js 16.2.3 (App Router, **webpack mode — not Turbopack**), React 19, Tailw
 - **OpenRouter for AI** — OpenAI SDK with `baseURL: https://openrouter.ai/api/v1`. ~80× cheaper than direct Claude. Key: `OPENROUTER_API_KEY`.
 - **Vinted has no public API / export** — mobile `/api/v2/` has no DataDome but needs residential UK proxies (~£20/mo) and TLS-fingerprint-aware clients (`curl_cffi` / `tls-client`). Strategy shift (2026-04-10): dropped Apify, use zero-cost Chrome extension that passively collects price data from Lily's normal browsing. Sold listings aren't accessible — infer sales from items that disappear.
 - **Sticky table headers** — `position: sticky` on a `<th>` resolves against the nearest scrolling ancestor. If the table wrapper has `overflow-x-auto`, sticky latches onto it (non-scrolling vertically) and the header never pins. Fix: the table wrapper itself must be the vertical scroll container (`flex-1 min-h-0 overflow-y-auto`), with the page using `h-full flex-col` so the wrapper can claim remaining height.
-- **Vinted scraper lives separately** — browser console scraper built by Claude CoWork (`Data/vinted_scraper_handover.md`). ReList imports output via xlsx or JSON paste.
+- **Vinted scraper lives separately** — browser console scraper built by Claude CoWork (`Data/vinted_scraper_handover.md`). Import pathway removed 2026-04-13 (Excel/CSV import + xlsx dep + Vinted-Scraper help group all deleted) — Chrome extension is now the only ingest path.
+- **Item delete needs explicit FK cleanup** — `transactions.itemId` is `NOT NULL` with no `ON DELETE CASCADE`, and `expenses.itemId` / `watchItems.convertedItemId` are nullable refs. Any DELETE on `items` must first `DELETE FROM transactions WHERE item_id = ?` and null out the other two, otherwise Postgres rejects and the row appears to vanish client-side (optimistic update) but reappears on refetch. Bulk + single DELETE handlers both need this — see `src/app/api/inventory/[id]/route.ts` and `.../bulk/route.ts`. Always check `res.ok` on the client delete so failures don't disappear silently.
+- **Base UI Menu error #31 = GroupLabel outside Group** — if `DropdownMenuLabel` (which wraps `Menu.GroupLabel`) isn't inside `DropdownMenuGroup` (`Menu.Group`), clicking the trigger throws `Base UI error #31` at runtime (message-minified in prod: "MenuGroupRootContext is missing"). Other minified error codes can be traced via `grep -rn "formatErrorMessage(N" node_modules/@base-ui/`.
 
 ## Research
 
