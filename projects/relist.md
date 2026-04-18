@@ -22,7 +22,9 @@ For live feature state and priorities, use `gh issue list` — not this page.
 
 Dashboard redesign (2026-04-12): "Today's Flow" kanban (Ship / Update / Review) on left, Performance panel on right with real 7-day sparkline + rolling 7-day-vs-weekly-target pace card. Daily-plan data folded into `/api/dashboard` for single round trip. Markup scratchpad (2026-04-13) sits under the kanban — cost input + markup slider with 100/150/200/300% presets → list price & profit.
 
-Backup (2026-04-13): `GET /api/backup` dumps all tables as one JSON file (Settings → "Download backup"). Each download upserts `last_backup_at` in `user_settings`; Dashboard shows an amber nudge banner when it's been 14+ days or never (3-day localStorage dismiss). No in-app restore yet — planned in #28 with a mandatory "Are you sure" confirm.
+Backup (2026-04-13): `GET /api/backup` dumps all tables as one JSON file (Settings → "Download backup"). Each download upserts `last_backup_at` in `user_settings`; Dashboard shows an amber nudge banner when it's been 14+ days or never (3-day localStorage dismiss).
+
+Restore (2026-04-18, #28 / PR #29): Settings → "Restore From Backup" uploads a backup JSON, shows a row-count diff vs current DB, requires typed `RESTORE` confirmation, and auto-downloads a pre-restore snapshot to Downloads just before POSTing. `POST /api/backup/restore` wipes tables in FK-safe order (children first: transactions, expenses, watchItems, dealAlerts, priceData, priceStats, userSettings, then items) and re-inserts parent-first. **Gated off in `VERCEL_ENV=production`** until auth (#16) lands — read-only `GET /api/backup/restore` (returns current counts) is always allowed. **neon-http driver has no transactions**, so the wipe + reinsert runs sequentially — the client-side pre-restore download is the safety net if anything fails mid-way.
 
 ## Tech
 
