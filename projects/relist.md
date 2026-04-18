@@ -1,7 +1,7 @@
 ---
 title: ReList — Vinted Reseller SaaS
 created: 2026-04-09
-updated: 2026-04-14
+updated: 2026-04-18
 tags: [vinted, saas, reselling, lily]
 ---
 
@@ -51,6 +51,8 @@ Next.js 16.2.3 (App Router, **webpack mode — not Turbopack**), React 19, Tailw
 - **Vinted scraper lives separately** — browser console scraper built by Claude CoWork (`Data/vinted_scraper_handover.md`). Import pathway removed 2026-04-13 (Excel/CSV import + xlsx dep + Vinted-Scraper help group all deleted) — Chrome extension is now the only ingest path.
 - **Item delete needs explicit FK cleanup** — `transactions.itemId` is `NOT NULL` with no `ON DELETE CASCADE`, and `expenses.itemId` / `watchItems.convertedItemId` are nullable refs. Any DELETE on `items` must first `DELETE FROM transactions WHERE item_id = ?` and null out the other two, otherwise Postgres rejects and the row appears to vanish client-side (optimistic update) but reappears on refetch. Bulk + single DELETE handlers both need this — see `src/app/api/inventory/[id]/route.ts` and `.../bulk/route.ts`. Always check `res.ok` on the client delete so failures don't disappear silently.
 - **Base UI Menu error #31 = GroupLabel outside Group** — if `DropdownMenuLabel` (which wraps `Menu.GroupLabel`) isn't inside `DropdownMenuGroup` (`Menu.Group`), clicking the trigger throws `Base UI error #31` at runtime (message-minified in prod: "MenuGroupRootContext is missing"). Other minified error codes can be traced via `grep -rn "formatErrorMessage(N" node_modules/@base-ui/`.
+- **Neon transfer cap = silent empty responses** — when a Neon project hits its monthly data-transfer allowance, queries don't error, they return empty. Inventory looked "wiped" and the dashboard zeroed out on 2026-04-17; data was intact, just unreadable until upgrade. Check the Neon console's billing page before assuming data loss. Upgrade path is Vercel-managed Launch tier (no separate bill — rolls into Vercel invoice).
+- **Photos are base64 in Postgres** — `items.photo_urls` is `text[]` of `data:image/jpeg;base64,...` strings at 1200×1200 q70 (~300 KB each). Also a `thumbnail_url` column (200×200 q60, ~9 KB) added 2026-04-17; `/api/inventory` list returns **only** `thumbnailUrl` + `photoCount`, never the full array. Full photos come from `/api/inventory/[id]` for the edit dialog. New writes generate both via `src/lib/photos.ts`. Backfill script: `scripts/backfill-thumbnails.mjs` (idempotent via `WHERE thumbnail_url IS NULL`).
 
 ## Research
 
