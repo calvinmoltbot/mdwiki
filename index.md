@@ -2,7 +2,7 @@
 title: mdwiki Index
 tags: [meta]
 created: 2026-04-06
-updated: 2026-04-06
+updated: 2026-04-25
 status: active
 ---
 
@@ -10,7 +10,7 @@ status: active
 
 Self-evolving knowledge system maintained by Claude Code and Hermes. Read the [conventions](meta/conventions.md) for how this wiki works.
 
-**Pages:** 15 | **Active:** 15 | **Stubs:** 0 | **Last updated:** 2026-04-06
+**Last updated:** 2026-04-25
 
 ---
 
@@ -24,6 +24,8 @@ How infrastructure works — the Mac Mini, networking, tooling, and automation.
 | [Claude Code Workflow](systems/claude-code.md) | active | tooling, workflow, skills |
 | [Cron Pipeline](systems/cron-pipeline.md) | active | hermes, infrastructure, automation |
 | [MarkViewer](systems/markviewer.md) | active | tooling, workflow, documentation |
+| [Gitleaks Secret Scanning](systems/gitleaks-secret-scanning.md) | active | security, git, infrastructure |
+| [Vercel + Neon Marketplace](systems/vercel-neon-marketplace.md) | active | vercel, neon, postgres, infrastructure |
 
 ## Projects
 
@@ -32,6 +34,11 @@ What each project does, architecture, gotchas, current state.
 | Page | Status | Tags |
 |---|---|---|
 | [Hermes Agent](projects/hermes.md) | active | hermes, agent, infrastructure |
+| [The Bridge](projects/the-bridge.md) | active | dashboard, hermes, nextjs |
+| [Vibe Bridge](projects/vibe-bridge.md) | active | hermes, infrastructure |
+| [OpenRouter Tracker](projects/openrouter-tracker.md) | active | openrouter, cost-tracking |
+| [ReList](projects/relist.md) | active | vinted, saas, lily |
+| [herbarium-hq](projects/herbarium-hq.md) | active | herbarium, debbie, business-hq |
 
 ## Decisions
 
