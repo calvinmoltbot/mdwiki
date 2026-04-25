@@ -1,7 +1,7 @@
 ---
 title: herbarium-hq — Business HQ for Herbarium Dyeworks
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-04-25-pm
 status: active
 tags: [herbarium, debbie, business-hq, nextjs]
 related:
@@ -76,6 +76,20 @@ Using **legacy** `service_role` JWT for the cross-app read. New Publishable/Secr
 - Shopify integration: direct Admin API vs Shopify AI toolkit (#10)
 - Mobile: responsive vs separate phone-first capture (#15)
 
-## Status snapshot (2026-04-25)
+## Status snapshot (2026-04-25 — PM)
 
-MVP shipped. Cash + Equipment + Stock + Sales registers all live, dashboard rolls them up. Blocked on Debbie's intake (#5) for the AI-guided plan editor (#6).
+MVP shipped. Now in dashboard-improvement mode — surfacing finance data for strategic interpretation (not redoing the bookkeeper view). PR #25 added anchored period filters, hero KPI strip with sparklines + run-rate, sign-flip-aware deltas. Plan + research in `markviewer/herbarium-hq/2026-04-25-dashboard-improvement-plan.md`. Channel mix + plain-English summary tracked as #26 (PR-B).
+
+## Design principles (from this session)
+
+The framing that drives every dashboard decision:
+
+- **Interpretation, not data** — the bookkeeping app has the numbers; hq exists to make them speak
+- **Three lenses** — held value (assets), operating (am I making money?), invested to date (what did it take to get here?). A £280 dye pot is not a £280 loss
+- **Anchored periods** — every period filter resolves against the latest finance transaction date, not "today". Stale imports never produce empty-looking dashboards
+- **Plain language over jargon** — "20p kept of every £1" beats "operating margin %"
+- **What to skip**: EBITDA, gross-vs-net tables, cohort/LTV analytics, gauge dials, multi-month cash forecasting — all alienating or noise-dominated at £8K/yr scale
+
+## Anchor pattern (reusable)
+
+For any read-only dashboard against a data source that may be stale: query for the latest record's date and use *that* as the "now" anchor for period filters. Surface the anchor visibly to the user. Pattern lives in `src/lib/finance/periods.ts`.
