@@ -2,7 +2,7 @@
 title: mdwiki Index
 tags: [meta]
 created: 2026-04-06
-updated: 2026-04-25
+updated: 2026-04-26
 status: active
 ---
 
@@ -10,7 +10,7 @@ status: active
 
 Self-evolving knowledge system maintained by Claude Code and Hermes. Read the [conventions](meta/conventions.md) for how this wiki works.
 
-**Last updated:** 2026-04-25
+**Last updated:** 2026-04-26
 
 ---
 
@@ -26,6 +26,7 @@ How infrastructure works — the Mac Mini, networking, tooling, and automation.
 | [MarkViewer](systems/markviewer.md) | active | tooling, workflow, documentation |
 | [Gitleaks Secret Scanning](systems/gitleaks-secret-scanning.md) | active | security, git, infrastructure |
 | [Vercel + Neon Marketplace](systems/vercel-neon-marketplace.md) | active | vercel, neon, postgres, infrastructure |
+| [Supabase CLI / psql access](systems/supabase-cli-access.md) | active | supabase, postgres, cli, secrets |
 
 ## Projects
 
