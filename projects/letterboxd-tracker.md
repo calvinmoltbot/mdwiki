@@ -2,7 +2,7 @@
 title: letterboxd-tracker
 tags: [project, vercel, neon, nextjs, plex, transmission]
 created: 2026-04-25
-updated: 2026-04-26
+updated: 2026-04-28
 status: active
 related:
   - ../systems/vercel-deploy-gotchas.md
@@ -43,6 +43,33 @@ TPB scrape (Bun, lb-tpb-scraper:7001 on Mini)
 Letterboxd HTML scrape → TMDB search (resolve IDs) → TMDB Watch Providers (UK) → cache in NeonDB → serve via API. Plus Plex library push for cross-referencing local copies, plus Transmission RPC proxy for torrent management.
 
 API route count is ~9 unique routes — well under any plan limit because Next.js + Vercel auto-dedupe routes into shared function bundles via symlinks at build time.
+
+## Transmission lives on the MacBook (2026-04-28)
+
+Transmission was moved off the Mini onto Calvin's MacBook so its peer traffic
+can route through Surfshark VPN without risking the Mini's Tailscale stack.
+
+- **Daemon:** runs on `calvins-macbook-air-3.tail9422ba.ts.net:9091`, RPC auth
+  off, RPC whitelist `100.*.*.*` (Tailscale CGNAT).
+- **VPN binding:** Transmission's `bind-address-ipv4` is the Surfshark
+  WireGuard interface (`utun5`, `10.14.0.2`). Public peer IP via VPN, real IP
+  hidden.
+- **Mini-side wiring:** `TRANSMISSION_URL` in `.env.local` (gitignored) on the
+  discovery branch points at the MacBook hostname above. Default in
+  `lib/transmission.ts` still references the Mini for back-compat — only the
+  env var is live.
+- **Post-download flow:** Transmission's `script-torrent-done` hook on the
+  MacBook rsyncs completed files over SSH/Tailscale to
+  `admin@mini-server.tail9422ba.ts.net:'/Volumes/SD Card/Plex/Movies/'` (the
+  external 512 GB ExFAT SSD attached to the Mini, mislabelled "SD Card").
+  Hook log at `~/Library/Logs/transmission-done.log` on the MacBook.
+- **Trade-off:** downloads only progress while the MacBook is awake. Calvin
+  accepted this — home-only use, fibre is fast, ratio not a concern.
+- **Why not Surfshark on the Mini directly:** Surfshark's macOS client
+  kill-switch will break Tailscale (it's the only way to reach a headless
+  Mini). See `/Users/admin/shared/markviewer/letterboxd-tracker/2026-04-28-surfshark-vpn-research.md`
+  for the full research, including the Gluetun-in-Docker fallback option that
+  was rejected as too heavy.
 
 ## Mini operational state
 
