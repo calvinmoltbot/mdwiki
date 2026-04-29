@@ -64,6 +64,7 @@ Reusable technical solutions and conventions.
 | [Capture pipeline with LLM routing](patterns/capture-pipeline-with-llm-routing.md) | active | patterns, ai, llm, ai-gateway, capture |
 | [Single-user Clerk gate](patterns/single-user-clerk-gate.md) | active | patterns, auth, clerk, nextjs |
 | [Vercel AI Gateway OIDC auth](patterns/vercel-ai-gateway-oidc-auth.md) | active | patterns, ai, ai-gateway, vercel |
+| [Next.js `"use server"` export rule](patterns/nextjs-use-server-export-rule.md) | active | patterns, nextjs, server-actions, gotcha |
 
 ## Reference
 
