@@ -17,9 +17,23 @@ Pattern for using Vercel AI Gateway in Next.js apps without managing a separate 
 
 ## What
 
-When code runs on a Vercel deployment, Vercel auto-provisions a `VERCEL_OIDC_TOKEN` in the runtime env. The AI SDK's `gateway` provider auto-detects this token and uses it to authenticate.
+For local development, `vercel env pull .env.local` downloads a `VERCEL_OIDC_TOKEN` (rotates every 12 hours). The AI SDK's gateway provider auto-detects it.
 
-For local development, `vercel env pull .env.local` downloads a fresh OIDC token (rotates every 12 hours by default).
+**At runtime in production**, `VERCEL_OIDC_TOKEN` is **NOT** automatically available unless OIDC Federation is explicitly enabled at the project level. By default, AI Gateway calls from a deployed Function need either:
+
+1. An explicit `AI_GATEWAY_API_KEY` env var (created via `vercel ai-gateway api-keys create <name>`), OR
+2. OIDC Federation enabled — and even then it's intended for federation with external services, not internal AI Gateway calls
+
+**Lesson learned (2026-04-29)**: I assumed the OIDC token would work in production runtime since it works locally. It doesn't. Always set `AI_GATEWAY_API_KEY` for production:
+
+```bash
+vercel ai-gateway api-keys create mykey
+# copy the vck_... value
+printf "%s" "vck_..." | vercel env add AI_GATEWAY_API_KEY production
+printf "%s" "vck_..." | vercel env add AI_GATEWAY_API_KEY development
+```
+
+Symptom of getting this wrong: `[llm] no auth available — VERCEL_OIDC_TOKEN and AI_GATEWAY_API_KEY both missing` in production logs. Calls silently fall through to whatever fallback you have. Mine was "drop in Inbox without LLM cleanup" — looked exactly like the LLM was returning bad answers.
 
 ## Code
 
