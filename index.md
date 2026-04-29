@@ -10,7 +10,7 @@ status: active
 
 Self-evolving knowledge system maintained by Claude Code and Hermes. Read the [conventions](meta/conventions.md) for how this wiki works.
 
-**Last updated:** 2026-04-26
+**Last updated:** 2026-04-29
 
 ---
 
@@ -40,6 +40,7 @@ What each project does, architecture, gotchas, current state.
 | [OpenRouter Tracker](projects/openrouter-tracker.md) | active | openrouter, cost-tracking |
 | [ReList](projects/relist.md) | active | vinted, saas, lily |
 | [herbarium-hq](projects/herbarium-hq.md) | active | herbarium, debbie, business-hq |
+| [mytodo](projects/mytodo.md) | active | todo, telegram, voice, gardening |
 
 ## Decisions
 
@@ -60,6 +61,9 @@ Reusable technical solutions and conventions.
 | [Agent Design Lessons](patterns/agent-design-lessons.md) | active | patterns, agents, cost, hermes |
 | [Agent Handoff Workflow](patterns/agent-handoff-workflow.md) | active | patterns, agents, workflow, hermes |
 | [MacBook SMB Automount](patterns/macbook-automount.md) | active | patterns, infrastructure, macos |
+| [Capture pipeline with LLM routing](patterns/capture-pipeline-with-llm-routing.md) | active | patterns, ai, llm, ai-gateway, capture |
+| [Single-user Clerk gate](patterns/single-user-clerk-gate.md) | active | patterns, auth, clerk, nextjs |
+| [Vercel AI Gateway OIDC auth](patterns/vercel-ai-gateway-oidc-auth.md) | active | patterns, ai, ai-gateway, vercel |
 
 ## Reference
 
