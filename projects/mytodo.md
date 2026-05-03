@@ -1,7 +1,7 @@
 ---
 title: mytodo — Capture-first todo app
 created: 2026-04-29
-updated: 2026-04-29
+updated: 2026-05-03
 tags: [todo, telegram, voice, ai-gateway, gardening, calvin]
 ---
 
@@ -60,20 +60,29 @@ Clerk middleware redirects unauthenticated traffic to `/sign-in`. After sign-in,
 
 `/api/transcribe` and Server Actions check `Origin` against an allowlist (production domain + localhost + Tailscale + `*.vercel.app` previews). Defense in depth alongside Clerk. The real auth boundary is Clerk middleware.
 
+## Deploy + migrations
+
+Push to `main` → Vercel auto-deploys via the GitHub integration. The build script is `drizzle-kit migrate && next build` (since #33), so any pending Drizzle migrations are applied automatically before the new code goes live. The `todo.warmwetcircles.com` alias points at the latest production deployment.
+
+**Schema-drift gotcha** — Drizzle's `db.select().from(table)` projects every column declared in `src/lib/db/schema.ts`. If schema in code drifts ahead of the prod DB, every page that hits that table 500s with `Failed query: select…`. This caused a hard outage on 2026-05-03 (#32) — prod was missing migrations 0003 + 0004 because nothing was applying them. Workflow now: edit `schema.ts` → `pnpm db:generate` → commit the new `drizzle/NNNN_*.sql` alongside the schema change → push.
+
 ## Useful commands
 
 ```bash
 # Local dev (webpack, binds to 0.0.0.0)
 pnpm dev
 
-# Migrations
-pnpm db:generate && pnpm db:migrate
+# Generate a migration after editing schema.ts (build will apply it)
+pnpm db:generate
 
-# Deploy
-vercel --prod && vercel alias set <new-url> todo.warmwetcircles.com
+# Apply migrations manually (rare — build does this)
+pnpm db:migrate
 
 # Pull env from Vercel
 vercel env pull .env.local
+
+# Tail prod logs
+vercel logs https://todo.warmwetcircles.com
 ```
 
 ## Open issues
