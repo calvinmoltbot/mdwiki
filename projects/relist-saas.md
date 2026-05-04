@@ -1,7 +1,7 @@
 ---
 title: relist-saas — multi-tenant rebuild for friends and family
 created: 2026-05-02
-updated: 2026-05-02
+updated: 2026-05-04
 tags: [vinted, multi-tenant, friends-and-family, nextjs, neon, clerk]
 ---
 
@@ -32,7 +32,9 @@ PRDs and planning docs live at `~/shared/markviewer/relist-saas/` (current PRD: 
 - **Free for users, forever.** No billing UI, no paid tiers. If a feature requires shared paid infra, default to BYO or park it.
 - **Vinted-only.** Same scope as legacy — no eBay/Depop.
 
-## Status (2026-05-02)
+## Status (2026-05-04)
+
+Design system foundation in place + Dashboard rebuilt + Lily's 120-item backup imported as sample data + DB perf trap fixed. **8 page-rebuild PRs queued** as issues #23–#31. Production lives at **`relist-saas.warmwetcircles.com`**.
 
 Phase 2 deferred backlog complete. Live surfaces:
 
@@ -69,4 +71,6 @@ For live feature state, use `gh issue list --repo calvinmoltbot/relist-saas` —
 - Drizzle config loads `.env.local` first (Vercel CLI writes there) — don't rely on `.env`.
 - `next.config.ts` allows the Mac Mini's Tailscale IP as a dev origin so HMR + Clerk client iframes work over SSH.
 - `globals.css` forces light scheme until a real theming pass — the boilerplate `prefers-color-scheme` rule was removed because it produced white-on-cream chaos.
-- Photos travel as base64 data URIs in `items.photoUrls` / `items.thumbnailUrl`. Will need to move to Vercel Blob (free tier) before Neon's 0.5 GB free tier squeezes — that's the planned exit.
+- Photos travel as base64 data URIs in `items.photoUrls` / `items.thumbnailUrl`. **Never `db.select().from(items)` without specifying columns** — the table is ~46 MB after Lily's import and pulling the blobs slowed Health to 20 seconds. Use explicit slim columns or derive `hasThumbnail` boolean / `photoCount` integer in SQL. Item-detail and the photo/backup APIs are the only places that actually need the bytes. (Issue #31 tracks the Vercel Blob migration that retires this trap permanently.)
+- **Clerk dev instances assign different userIds per Vercel domain.** Signing in to `relist-saas.warmwetcircles.com` and to a `relist-saas-git-...vercel.app` preview produced two different `user_xxx` IDs for the same email. Always test against the canonical subdomain only — never share preview URLs with Calvin. The Lily-data importer (`scripts/import-from-lily.mjs --user-id <clerk_id>`) must be run with the user's canonical subdomain userId.
+- **Domain map** (also in `AGENTS.md` for in-session reference): `relist-saas.warmwetcircles.com` is THIS app's only canonical URL; `relist.warmwetcircles.com` is **Lily's live production site** — read-only forever; `vinted.warmwetcircles.com` is Lily brainstorming, also off-limits.
