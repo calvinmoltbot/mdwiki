@@ -1,7 +1,7 @@
 ---
 title: relist-saas — multi-tenant rebuild for friends and family
 created: 2026-05-02
-updated: 2026-05-04
+updated: 2026-05-04 (post-rebuild wave)
 tags: [vinted, multi-tenant, friends-and-family, nextjs, neon, clerk]
 ---
 
@@ -34,7 +34,7 @@ PRDs and planning docs live at `~/shared/markviewer/relist-saas/` (current PRD: 
 
 ## Status (2026-05-04)
 
-Design system foundation in place + Dashboard rebuilt + Lily's 120-item backup imported as sample data + DB perf trap fixed. **8 page-rebuild PRs queued** as issues #23–#31. Production lives at **`relist-saas.warmwetcircles.com`**.
+Design system foundation in place + Dashboard rebuilt + Lily's 120-item backup imported as sample data + DB perf trap fixed. **6 page-rebuild PRs landed in one wave** (#32–#37, closing issues #23–#28): inventory list, item detail, profit (charts), health (charts), bestsellers, settings sub-nav. Three new shared primitives shipped alongside: `<ViewToggle>`, `<SegmentedControl>`, `<SubNav>` — all in `@/components/ui` (or `@/components/nav` for SubNav). Remaining queue: **#29** landing redesign, **#30** mobile responsive pass, **#31** base64→Vercel Blob migration. Production lives at **`relist-saas.warmwetcircles.com`**.
 
 Phase 2 deferred backlog complete. Live surfaces:
 
