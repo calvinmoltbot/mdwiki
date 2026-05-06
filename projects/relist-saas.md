@@ -1,7 +1,7 @@
 ---
 title: relist-saas — multi-tenant rebuild for friends and family
 created: 2026-05-02
-updated: 2026-05-05
+updated: 2026-05-06
 tags: [vinted, multi-tenant, friends-and-family, nextjs, neon, clerk]
 ---
 
@@ -32,9 +32,15 @@ PRDs and planning docs live at `~/shared/markviewer/relist-saas/` (current PRD: 
 - **Free for users, forever.** No billing UI, no paid tiers. If a feature requires shared paid infra, default to BYO or park it.
 - **Vinted-only.** Same scope as legacy — no eBay/Depop.
 
-## Status (2026-05-05)
+## Status (2026-05-06)
 
-Page-rebuild wave (PRs #32–#37) plus a refinement wave: row-level inventory actions (#41), Vinted-no-fees app-wide (#42), item-detail no-scroll fit (#43), animated landing (#44), acquisition type bought/own + null-cost = 0 (#47), bought-vs-own reporting splits (#48), Vercel Blob phase 1 — new uploads write to Blob, legacy base64 still renders via proxy (#49). AGENTS.md now codifies four project-wide rules: **no-scroll @ 1280×800**, **Vinted has no seller fees**, **cost handling (null = 0; `coerceMoney`; own-items aren't penalised for missing cost)**, and the existing tenancy / sign-up / domain-map rules. Five shared primitives now live in `@/components/ui` + `@/components/nav`: `ViewToggle`, `SegmentedControl`, `SubNav`, plus the older `Card`/`Tile`/`StatusPill`/`Sparkline`/`PageHeader`/`Button`. Backlog: **#30** mobile responsive pass, **#31 phase 2** (backfill existing base64 → Blob + drop the legacy thumb proxy). Production lives at **`relist-saas.warmwetcircles.com`**.
+**Photos fully on Blob (#31 closed).** Phase 2 ran a one-shot backfill (`scripts/backfill-photos-to-blob.mjs`) that moved 120/120 imported items from base64 in `items.photo_urls`/`thumbnail_url` to public Vercel Blob URLs. The legacy `/api/inventory/thumb/[id]` proxy is gone, the SQL `CASE WHEN ... LIKE 'http%'` projections are gone, and the `resizeFromDataUri`/`decodeDataUri`/`thumbSrc` helpers in `src/lib/photos.ts` are gone — `items.thumbnail_url` is always either an `https://*.blob.vercel-storage.com/...` URL or null.
+
+**Profit page rebuilt (#52).** Was three scrollable screens with no pagination on the items table; now fits 1280×800 in one screen: condensed 7-tile row (gross + margin folded into the Net profit tile sub-label), single line chart, and a tabbed Card below with Items / Category / Source / Month. Items tab has in-memory pagination (25/page), sortable columns, and a debounced name search — all URL-driven so back/forward + share-links work. Cost composition donut + standalone Summary card both dropped.
+
+**Perf pass shipped (audit at `~/shared/markviewer/relist-saas/2026-05-06-perf-audit.md`).** Five PRs: loading.tsx skeletons for /dashboard /profit /inventory /plan /bestsellers /health (#54), Apply-button removal across /profit /bestsellers /inventory /expenses with onChange auto-navigate client components (#55), composite indexes `items_user_status_sold_idx` / `items_user_acquisition_idx` / `items_user_source_idx` plus SQL filter pushdown in `profit.ts`/`profit-series.ts`/`bestsellers.ts` (#56), and `unstable_cache` wrappers on the three heaviest compute functions with shared user-scoped tag `user:items:${userId}` (#57). All mutation paths (status-actions + inventory + expenses API routes) now call `revalidateUserItems(userId)` alongside the existing `revalidatePath`.
+
+AGENTS.md still codifies four project-wide rules: **no-scroll @ 1280×800**, **Vinted has no seller fees**, **cost handling (null = 0; `coerceMoney`; own-items aren't penalised for missing cost)**, plus tenancy / sign-up / domain-map. Production lives at **`relist-saas.warmwetcircles.com`**. Backlog: **#30** mobile responsive pass.
 
 Phase 2 deferred backlog complete. Live surfaces:
 
