@@ -1,7 +1,7 @@
 ---
 title: relist-saas — multi-tenant rebuild for friends and family
 created: 2026-05-02
-updated: 2026-05-06
+updated: 2026-05-07
 tags: [vinted, multi-tenant, friends-and-family, nextjs, neon, clerk]
 ---
 
@@ -31,6 +31,10 @@ PRDs and planning docs live at `~/shared/markviewer/relist-saas/` (current PRD: 
 - **Hosting cap: $5/month total** across Neon + Vercel + Clerk. Drives "BYO key for LLMs" and "users feed data via the extension, we don't run scrapers" defaults.
 - **Free for users, forever.** No billing UI, no paid tiers. If a feature requires shared paid infra, default to BYO or park it.
 - **Vinted-only.** Same scope as legacy — no eBay/Depop.
+
+## Status (2026-05-07)
+
+**Health page completeness clarity (#58).** "Biggest completeness wins" used to surface only the single highest-weight missing field per item with a generic chip ("+20 Description"). It now lists every missing field as concrete chips — `Photos (1/3)`, `Title (2/4 words)`, `Description (15/40 chars)` — generated dynamically by `scoreItem` in `src/lib/inventory/completeness.ts` (the new `summarise()` returns `topGaps` with the full `missing[]` instead of the old single-field `biggestImpact`). Each chip deep-links to `/inventory/[id]?focus=<field>`, and the item detail page gained an editable **Listing details** section (`src/app/(app)/inventory/[id]/edit-details.tsx`) covering the seven completeness fields (title, brand, category, size, description, vintedUrl) with a live score preview and `?focus=` auto-open + auto-focus. Inventory list with `?incomplete=1` swaps Brand/Size for a Missing-chip column. Also fixed `userScope.listItems` `incompleteOnly` post-filter — it was filtering on `condition`/`listedPrice`, neither of which count toward completeness, so items appeared "incomplete" for the wrong reasons.
 
 ## Status (2026-05-06)
 
