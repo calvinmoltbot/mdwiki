@@ -2,10 +2,11 @@
 title: Firebase Callable Functions — public invoker IAM gotcha
 tags: [firebase, cloud-functions, iam, gcp, debugging]
 created: 2026-05-18
-updated: 2026-05-18
+updated: 2026-05-20
 status: active
 related:
   - ../projects/golf.md
+  - ./gcloud-headless-auth.md
 ---
 
 # Firebase Callable Functions — public invoker IAM gotcha
@@ -45,7 +46,7 @@ Should list `allUsers` under `roles/cloudfunctions.invoker`.
 
 ## Permissions to run the fix
 
-The `firebase-adminsdk-fbsvc@<project>.iam.gserviceaccount.com` service account does **not** have `cloudfunctions.functions.setIamPolicy`. The fix needs a human running `gcloud` interactively (`gcloud auth login`) OR the binding applied via the GCP Console UI:
+The `firebase-adminsdk-fbsvc@<project>.iam.gserviceaccount.com` service account does **not** have `cloudfunctions.functions.setIamPolicy`. The fix needs a human running `gcloud` interactively as an account with project rights (on the headless Mini this means the [no-launch-browser auth flow](./gcloud-headless-auth.md) — `gcloud auth login` fails outright there) OR the binding applied via the GCP Console UI:
 
 1. https://console.cloud.google.com/functions/list?project=<project-id>
 2. Click the function → **Permissions** tab → **Grant access**
@@ -80,4 +81,5 @@ The function in question doesn't have to use `request.auth` — callable functio
 ## Related
 
 - [Golf project — scorer link architecture](../projects/golf.md): primary use case in our stack. The scorer admin is unauth by design; the security comes from the token, validated server-side. We deploy `submitScores` and `getScorerRoundContext` as callables; both need this binding.
-- Issue [calvinmoltbot/golf#27](https://github.com/calvinmoltbot/golf/issues/27): track adding a post-deploy wrapper script.
+- Issue [calvinmoltbot/golf#27](https://github.com/calvinmoltbot/golf/issues/27): post-deploy wrapper script — **now exists** as `functions/scripts/deploy-with-iam.sh` (run via `pnpm --filter functions run deploy`); re-grants `allUsers` invoker on `getScorerRoundContext`, `submitScores`, `getPublicShareContext` after every deploy.
+- [gcloud auth on the headless Mac Mini](./gcloud-headless-auth.md): how to get gcloud authenticated to run the binding/deploy from the Mini.
