@@ -1,7 +1,7 @@
 ---
 title: golf — Holywood Golf tournament manager
 created: 2026-05-18
-updated: 2026-05-21
+updated: 2026-05-22
 status: active
 tags: [golf, firebase, react, vite, vercel]
 related:
@@ -47,6 +47,16 @@ For live feature state, use `gh issue list --repo calvinmoltbot/golf` — not th
 
 Player IDs are doubly disconnected from the global Red Arrows player DB — see ROADMAP.md.
 
+**Cadence is monthly.** One `MonthlyDraw` = the same five teams for that month's ~4 Saturdays; each Saturday is its own `Match` for scoring. The club briefly drew *weekly* early in the 2026 season (so a one-off weekly draw like 25 Apr exists as its own draw doc `draw-2026-04-25`), then settled on monthly. **The monthly-draw generator can't skip a Saturday** — it always creates 4 consecutive weekly matches from `firstMatchDate`; any skipped/extra week needs a manual data-fix script.
+
+## Draw engine (`src/utils/redArrowsDrawEngine.ts`)
+
+Builds the five teams for a draw. Two variety rules, both **soft preferences** (always produces a draw):
+1. **President** (`SweepTournament.currentCaptainId`) leads Team 1 and plays with everyone once over the season — rotates onto people he hasn't been paired with yet.
+2. **All five teams** minimise repeat pairings: the engine tracks `pairCounts` (how often each pair has shared a team), generates ~250 candidate draws, keeps the one with most president-new-partners then lowest total repeat cost, then runs local-search swaps between non-captain teams.
+
+**The history must be fed at the call site.** The engine derives its rotation/pairing state from `season.weeks`. `MonthlyDrawCreator` builds those from prior draws via `drawsToHistoryWeeks(existingDraws, firstSat)` (in `drawPlayerAdapter.ts`) — draws strictly *before* the month being drawn. (Originally the call site passed `weeks: []`, so rotation silently never worked in prod — PR #83.) Variety-across-all-teams shipped in #84; remaining polish (on-screen variety score) tracked in **#84**. Analysis tools: `scripts/drawAudit.ts`, `scripts/pairingFromPdfs.ts`.
+
 ## Three token-gated public routes
 
 All unauth — see [firebase-functions-iam-gotcha](../systems/firebase-functions-iam-gotcha.md) for the deploy quirk that bites these.
@@ -65,10 +75,13 @@ All unauth — see [firebase-functions-iam-gotcha](../systems/firebase-functions
 
 ## Admin scripts (one-off recovery)
 
-In `scripts/` — both default to dry-run, require `--commit`:
+In `scripts/` — read-only or dry-run by default; writes need `--commit`/`--apply`. **SA prod *reads* are also blocked by Claude's auto-mode classifier — Calvin runs them via the `!` prefix.** All take `--service-account Ignore/holywoodgolf-firebase-adminsdk-*.json`.
 
 - `scripts/fixMatchDate.ts` — list matches by date (collectionGroup scan) or rewrite a single match's `date` field in place.
 - `scripts/moveMatchResults.ts` — atomically move `results` array between two Match docs. Marks destination `completed`, resets source to `scheduled`. Refuses to clobber.
+- `scripts/drawAudit.ts` — read-only: dump season captain, captain memberships per sweep, president-partner history (flags repeats), each draw's teams + matches, and a **who-played-whom / repeated-pairings** table.
+- `scripts/pairingFromPdfs.ts` — local (no Firestore): pairing analysis from hardcoded draw data, used as ground truth from the printed sheets.
+- `scripts/fixMarchBlockMatches.ts`, `scripts/backfill25April.ts` — the one-off 2026 corrections (drop phantom 4 Apr, add 25 Apr; record 25 Apr as its own draw with real teams). Records of past surgery — not for reuse.
 
 Issue **#30** tracks proper admin-UI replacements for these.
 
@@ -94,3 +107,9 @@ Issue **#30** tracks proper admin-UI replacements for these.
 - **`where + orderBy`** on top-level collections (e.g. `publicShareTokens`) needs a composite index. Default to client-side sorting unless data volume warrants the index.
 - The Firebase admin SDK service account does NOT have `cloudfunctions.functions.get` — use the Firebase Console for IAM, not `gcloud` as that SA.
 - Node 20 runtime deprecation hard deadline: **2026-10-30**.
+- **History-derived engine state must be fed at the call site.** The draw engine computes rotation/variety from `season.weeks` — if the screen passes `weeks: []`, it silently behaves as if there's no history (this shipped broken for months; PR #83). When debugging "the draw ignored history," check the call site (`MonthlyDrawCreator` / `drawsToHistoryWeeks`), not just the engine.
+- **Hard-refresh before drawing after any out-of-app data change.** `MonthlyDrawCreator` draws against the draw list held in the browser's React state. After running an admin script (e.g. backfilling a draw), an un-refreshed tab will draw against stale history and miss it. Cmd+Shift+R first.
+- **PDF "president" must key on `currentCaptainId`, not a `captain` membership role.** Players keep a `captain` `sweepMembership` from past seasons, so checking `role === 'captain'` flags ex-presidents too (two red dots). `matchPdfExport.ts` now scopes to `tournament.currentCaptainId`.
+- **Player nicknames vs real names** (system vs club scorecard): "Al Jones" = **Alister Jones** (current president); "Potsy Nevin" = **Garth Nevin** (2025 ex-president, hence a leftover captain membership); "Dave Brown" = Davy Brown; "Tony Denvir" = Anthony Denvir.
+- **Vercel auto-deploy can lag** a few minutes on a `main` push (it's not broken). To force a prod deploy: `vercel --prod --yes` (builds with prod env vars, re-aliases the domain).
+- **`vite dev` is unusable over Tailscale** (~1900 separate module requests, each a tailnet round-trip → page never loads). Use `pnpm build` + `vite preview --host 0.0.0.0`, or just deploy. Firebase OAuth only authorises `localhost` by default (not the Tailscale IP or `*.vercel.app` previews) — test real auth on `golf.warmwetcircles.com` or via an SSH `-L` tunnel to localhost. The in-app dev-bypass logs in as `dev-user` (empty data) — useless for verifying real draws.
