@@ -1,11 +1,12 @@
 ---
 title: golf — Holywood Golf tournament manager
 created: 2026-05-18
-updated: 2026-05-18
+updated: 2026-05-21
 status: active
 tags: [golf, firebase, react, vite, vercel]
 related:
   - ../systems/firebase-functions-iam-gotcha.md
+  - ../systems/gcloud-headless-auth.md
 ---
 
 # golf
@@ -86,6 +87,9 @@ Issue **#30** tracks proper admin-UI replacements for these.
 
 ## Gotchas
 
+- **⚠ Match doc IDs repeat per draw — NOT unique across the season.** Matches get deterministic IDs `match-1`..`match-4` *per draw* (`createMonthlyDraw`), so every draw has its own `match-1`. Any code that flattens matches across draws and keys on bare `match.id` / `matchId` collapses draws onto each other. **Always key on the composite `${tournamentId}/${drawId}/${matchId}`** (or at least `drawId/matchId`). This has bitten three times: Home prev/next nav (#72, later months unreachable), scorer-link candidate selection + scoring-timeline React keys (#79), and `listTokensForMatch` returning other draws' tokens (#82). When touching anything that lists/selects/aggregates matches season-wide, assume this trap until proven otherwise.
+- **gcloud auth on the headless Mini** for the functions deploy's IAM step — see [gcloud-headless-auth](../systems/gcloud-headless-auth.md). `calvin.orr@gmail.com` (project owner) must be the active gcloud account; `gcloud auth login --no-launch-browser` in a *real* terminal (not Claude's `!`); prod deploy needs explicit user OK.
+- **Reverting a match to "no scores"**: the AdminMatchEditor per-row `×` button *marks a player absent* — it does not cleanly delete the result. To truly reset, write `{results:[], absentPlayerIds:[], status:'scheduled'}` to the match doc via an admin-SDK script (SA prod writes are blocked by Claude's auto-mode classifier, so run via `!`).
 - **Collection-group queries** on Match's `date` field require a single-field collectionGroup index that isn't provisioned by default — admin scripts filter client-side instead.
 - **`where + orderBy`** on top-level collections (e.g. `publicShareTokens`) needs a composite index. Default to client-side sorting unless data volume warrants the index.
 - The Firebase admin SDK service account does NOT have `cloudfunctions.functions.get` — use the Firebase Console for IAM, not `gcloud` as that SA.
