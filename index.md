@@ -27,6 +27,7 @@ How infrastructure works — the Mac Mini, networking, tooling, and automation.
 | [Gitleaks Secret Scanning](systems/gitleaks-secret-scanning.md) | active | security, git, infrastructure |
 | [Vercel + Neon Marketplace](systems/vercel-neon-marketplace.md) | active | vercel, neon, postgres, infrastructure |
 | [Supabase CLI / psql access](systems/supabase-cli-access.md) | active | supabase, postgres, cli, secrets |
+| [Next.js + Tailscale dev origins](systems/nextjs-tailscale-dev-origins.md) | active | nextjs, tailscale, hydration, debugging |
 
 ## Projects
 
