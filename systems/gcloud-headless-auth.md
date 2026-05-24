@@ -2,11 +2,12 @@
 title: gcloud auth on the headless Mac Mini
 tags: [gcloud, gcp, auth, mac-mini, headless, debugging]
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-05-24
 status: active
 related:
   - ./mac-mini.md
   - ./firebase-functions-iam-gotcha.md
+  - ./nextjs-tailscale-dev-origins.md
   - ../projects/golf.md
 ---
 
@@ -39,6 +40,53 @@ Once finished, enter the verification code provided in your browser: ERROR: gclo
 ```
 
 **Fix**: run `gcloud auth login --no-launch-browser` in a **real interactive terminal** (a separate iTerm2 tab SSH'd into the Mini), not via `!`. The verification code is PKCE-bound to that specific login session, so it can't be pasted into a *different* / fresh `gcloud` process — it must go into the same prompt that printed the URL.
+
+## ADC for a *library* (no gcloud) — Claude-driven loopback OAuth
+
+The above is about authenticating the **gcloud CLI** itself. A different, harder
+case: a **library/app** that needs **Application Default Credentials** (ADC) with a
+**sensitive scope** (e.g. the GA4 Data API needs `analytics.readonly`) on the
+headless Mini. Here `gcloud` is the wrong tool entirely, and its headless flows
+dead-end:
+
+- `gcloud auth application-default login --scopes=…analytics.readonly` with the
+  **default** client → *"This app is blocked"* (analytics.readonly is sensitive on
+  personal Gmail).
+- Use your **own** Desktop OAuth client (`--client-id-file`) to bypass that, and
+  `--no-launch-browser` is **rejected**; you must use `--no-browser`, which prints
+  a `--remote-bootstrap` command that has to run on a machine with **both a browser
+  and gcloud** — the MacBook has Chrome but **no gcloud**. Dead end.
+
+**Workaround — drive the OAuth flow manually, no gcloud:** Claude can run the whole
+loopback flow itself using Chrome automation on the MacBook.
+
+1. **Prereqs (one-time):** a **Desktop** OAuth client in the GCP project
+   (`redirect_uri=http://localhost`); consent screen External/**Testing** with the
+   user added as a **test user** (test users skip sensitive-scope verification).
+2. **Build the consent URL** for that client:
+   `https://accounts.google.com/o/oauth2/auth?client_id=…&redirect_uri=http://localhost&response_type=code&scope=<scope>&access_type=offline&prompt=consent`
+3. **Drive MacBook Chrome** to it; the **user clicks through their own consent**
+   (Advanced → "Go to … (unsafe)" for the Testing-mode warning).
+4. Google redirects to `http://localhost/?code=…`. The page fails to load (nothing
+   is listening on the MacBook's port 80) **but the address bar keeps the URL** —
+   read the `?code=` from it. No local listener needed.
+5. **Exchange the code on the Mini** (`POST https://oauth2.googleapis.com/token`
+   with the client id/secret + `redirect_uri=http://localhost`). Codes are
+   **single-use** — capture + exchange in one shot.
+6. **Write the ADC file** `~/.config/gcloud/application_default_credentials.json`
+   as an `authorized_user` doc: `client_id`, `client_secret`, `refresh_token`,
+   `type: "authorized_user"`, `quota_project_id: <project>`. The Google client
+   libraries pick it up ambiently (leave `GOOGLE_APPLICATION_CREDENTIALS` unset).
+
+Gotchas: a **stale** ADC file (e.g. from an old default-client login with no
+analytics scope) silently shadows everything → `PERMISSION_DENIED: insufficient
+authentication scopes`; back it up and overwrite. Service-account keys *authenticate*
+but GA4 **rejects adding an SA email as a property user** ("doesn't match a Google
+Account"), which is why the property owner's user ADC is used instead.
+
+Worked end-to-end for hdwshopify GA4 (2026-05-24): property `538465497`, client in
+project `hdw-analytics`. This is the general recipe whenever a headless-Mini app
+needs ADC/OAuth and `gcloud`'s flows won't cooperate.
 
 ## Picking the right active account
 
