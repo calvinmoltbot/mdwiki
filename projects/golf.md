@@ -1,7 +1,7 @@
 ---
 title: golf — Holywood Golf tournament manager
 created: 2026-05-18
-updated: 2026-05-22
+updated: 2026-05-24
 status: active
 tags: [golf, firebase, react, vite, vercel]
 related:
@@ -33,6 +33,14 @@ For live feature state, use `gh issue list --repo calvinmoltbot/golf` — not th
 - pnpm workspaces (root + `functions/`)
 - Tests: Node.js test runner, in `tests/`
 - No `react-router` — routes matched by pathname regex in `src/App.tsx`
+
+## Design language — "Fairway glass"
+
+As of 2026-05-24 the **whole app** is on one design language (rolled out across #88–#101). Tokens live in `src/index.css` (CSS vars) + `tailwind.config.js`:
+- Colours: `board-green` (#1e4a31, primary), `paint-red` (#b03326, **money/winners/destructive only**), `paint-yellow` (#e7b13a, highlight/caution — never as text colour); neutrals `admin-bg`/`admin-surface`/`admin-border`/`admin-text`/`admin-muted`.
+- Hover/ink tokens (added #95): `board-green-hover`, `paint-red-hover`, `paint-yellow-ink` (#8a6a1f — the readable yellow for text on yellow tints), `admin-border-hover`. **Use these, don't hard-code hover hexes.**
+- Patterns: gradient accent strip `bg-gradient-to-r from-board-green via-paint-yellow to-paint-red`; frosted glass `bg-white/70 backdrop-blur-xl`; `rounded-full` pill controls; inner content cards `rounded-md border border-admin-border bg-admin-surface`, with `rounded-2xl` reserved for one hero card per screen; `font-display` titles / `font-ui` body.
+- Gold-standard reference components: `StandingsTab`, `AdminTopBar`, `DesktopHomePreview`.
 
 ## Data model (Red Arrows sweep)
 
@@ -91,7 +99,9 @@ Issue **#30** tracks proper admin-UI replacements for these.
 - `src/utils/redArrowsStats.ts` — leaderboard aggregation (`computePlayerStandings`)
 - `src/services/firebase.service.ts` — Firestore CRUD
 - `src/services/scorerToken.service.ts`, `src/services/publicShareToken.service.ts`
-- `src/components/RedArrowsMainDashboard.tsx` — admin landing page
+- `src/components/home/DesktopHomePreview.tsx` — **the live Home tab** (named export `StandingsHeroHome`, standings-as-hero + match panel/Quick Actions; default export is the `/home-preview` route). NB the old `HomeDashboard.tsx` was deleted as dead code (#97).
+- `src/components/ExtrasMenu.tsx` — the **More tab** (tile grid + per-section render switch; add new admin tools here as a tile + a `renderSubContent` case)
+- `src/components/admin/RotationToolsLoader.tsx` — self-loading wrapper feeding `SeasonSimulator`/`AdminOverview` the active sweep + `drawsToHistoryWeeks(draws)` history
 - `src/components/scorer/LiveSharePage.tsx` — the `/live/:token` view (mobile-first template to mirror for #33)
 - `src/components/scorer/PublicShareAdmin.tsx` — admin UI for minting share tokens (with QR)
 - `functions/src/index.ts` — function exports
@@ -112,4 +122,5 @@ Issue **#30** tracks proper admin-UI replacements for these.
 - **PDF "president" must key on `currentCaptainId`, not a `captain` membership role.** Players keep a `captain` `sweepMembership` from past seasons, so checking `role === 'captain'` flags ex-presidents too (two red dots). `matchPdfExport.ts` now scopes to `tournament.currentCaptainId`.
 - **Player nicknames vs real names** (system vs club scorecard): "Al Jones" = **Alister Jones** (current president); "Potsy Nevin" = **Garth Nevin** (2025 ex-president, hence a leftover captain membership); "Dave Brown" = Davy Brown; "Tony Denvir" = Anthony Denvir.
 - **Vercel auto-deploy can lag** a few minutes on a `main` push (it's not broken). To force a prod deploy: `vercel --prod --yes` (builds with prod env vars, re-aliases the domain).
+- **Before deleting "dead" UI, grep for the service calls it uniquely owns.** The May-19 IA pivot (#41/#47) unrouted several components but left the files behind, so they *looked* like deletable orphans. Twice in one session (2026-05-24) an "orphan" turned out to be the **sole entry point for a needed capability**: the president-rotation tools (`SeasonSimulator`/`AdminOverview`) and — critically — `SweepTournamentManagement`, the *only* UI that calls `createSweepTournament` (delete it and there's no way to start a new season; Sweep Admin's empty-state even pointed back at the dead "Tournaments tab"). All three were **reconnected**, not deleted (#100/#101), as admin-gated tiles in More. Lesson: `grep -rn createX` the unique service call before deleting; an unmounted component ≠ an unneeded one. (Genuinely-dead cruft removed separately in #97/#98.)
 - **`vite dev` is unusable over Tailscale** (~1900 separate module requests, each a tailnet round-trip → page never loads). Use `pnpm build` + `vite preview --host 0.0.0.0`, or just deploy. Firebase OAuth only authorises `localhost` by default (not the Tailscale IP or `*.vercel.app` previews) — test real auth on `golf.warmwetcircles.com` or via an SSH `-L` tunnel to localhost. The in-app dev-bypass logs in as `dev-user` (empty data) — useless for verifying real draws.
