@@ -1,7 +1,7 @@
 ---
 title: golf — Holywood Golf tournament manager
 created: 2026-05-18
-updated: 2026-05-24
+updated: 2026-05-25
 status: active
 tags: [golf, firebase, react, vite, vercel]
 related:
@@ -91,7 +91,7 @@ In `scripts/` — read-only or dry-run by default; writes need `--commit`/`--app
 - `scripts/pairingFromPdfs.ts` — local (no Firestore): pairing analysis from hardcoded draw data, used as ground truth from the printed sheets.
 - `scripts/fixMarchBlockMatches.ts`, `scripts/backfill25April.ts` — the one-off 2026 corrections (drop phantom 4 Apr, add 25 Apr; record 25 Apr as its own draw with real teams). Records of past surgery — not for reuse.
 
-Issue **#30** tracks proper admin-UI replacements for these.
+Admin-UI equivalents now exist (#30, 2026-05-25): **More → Bulk Results Audit** (`AdminResultsReview`) has per-match **Edit date** + **Move results** controls, backed by `sweepTournamentService.updateMatchDate` and `.moveMatchResults` (the latter an atomic `runTransaction` with the same empty-dest/no-clobber guards as the script). The scripts above remain as the no-UI / bulk fallback. The page also now collapses each match to a one-line summary (only suspect matches auto-expand) to cut scrolling.
 
 ## Key files
 
