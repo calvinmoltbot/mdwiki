@@ -2,7 +2,7 @@
 title: mdwiki Index
 tags: [meta]
 created: 2026-04-06
-updated: 2026-04-26
+updated: 2026-05-26
 status: active
 ---
 
@@ -10,7 +10,7 @@ status: active
 
 Self-evolving knowledge system maintained by Claude Code and Hermes. Read the [conventions](meta/conventions.md) for how this wiki works.
 
-**Last updated:** 2026-04-29
+**Last updated:** 2026-05-26
 
 ---
 
@@ -28,6 +28,8 @@ How infrastructure works — the Mac Mini, networking, tooling, and automation.
 | [Vercel + Neon Marketplace](systems/vercel-neon-marketplace.md) | active | vercel, neon, postgres, infrastructure |
 | [Supabase CLI / psql access](systems/supabase-cli-access.md) | active | supabase, postgres, cli, secrets |
 | [Next.js + Tailscale dev origins](systems/nextjs-tailscale-dev-origins.md) | active | nextjs, tailscale, hydration, debugging |
+| [Next.js 16: middleware → proxy](systems/nextjs-16-proxy-rename.md) | active | nextjs, nextjs-16, proxy, auth, gotcha |
+| [GA4 Data API on Vercel](systems/ga4-data-api-on-vercel.md) | active | ga4, google-analytics, vercel, auth, gotcha |
 
 ## Projects
 
@@ -66,6 +68,7 @@ Reusable technical solutions and conventions.
 | [Single-user Clerk gate](patterns/single-user-clerk-gate.md) | active | patterns, auth, clerk, nextjs |
 | [Vercel AI Gateway OIDC auth](patterns/vercel-ai-gateway-oidc-auth.md) | active | patterns, ai, ai-gateway, vercel |
 | [Next.js `"use server"` export rule](patterns/nextjs-use-server-export-rule.md) | active | patterns, nextjs, server-actions, gotcha |
+| [Single-user Google auth (Next 16, hand-rolled)](patterns/nextjs-single-user-google-auth.md) | active | patterns, auth, nextjs-16, google-oauth, jose |
 
 ## Reference
 

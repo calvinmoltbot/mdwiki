@@ -7,6 +7,7 @@ status: active
 related:
   - ./vercel-neon-marketplace.md
   - ../projects/letterboxd-tracker.md
+  - ./ga4-data-api-on-vercel.md
 ---
 
 # Vercel deploy gotchas — the silent failures

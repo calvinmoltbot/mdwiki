@@ -8,6 +8,7 @@ related:
   - ./mac-mini.md
   - ./firebase-functions-iam-gotcha.md
   - ./nextjs-tailscale-dev-origins.md
+  - ./ga4-data-api-on-vercel.md
   - ../projects/golf.md
 ---
 

@@ -9,6 +9,7 @@ sources:
   - mytodo/src/middleware.ts
 related:
   - ../projects/mytodo.md
+  - ./nextjs-single-user-google-auth.md
 ---
 
 # Single-user Clerk gate via env-var email allowlist
