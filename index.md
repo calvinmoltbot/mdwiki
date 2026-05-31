@@ -10,7 +10,7 @@ status: active
 
 Self-evolving knowledge system maintained by Claude Code and Hermes. Read the [conventions](meta/conventions.md) for how this wiki works.
 
-**Last updated:** 2026-05-26
+**Last updated:** 2026-05-31
 
 ---
 
@@ -30,6 +30,7 @@ How infrastructure works — the Mac Mini, networking, tooling, and automation.
 | [Next.js + Tailscale dev origins](systems/nextjs-tailscale-dev-origins.md) | active | nextjs, tailscale, hydration, debugging |
 | [Next.js 16: middleware → proxy](systems/nextjs-16-proxy-rename.md) | active | nextjs, nextjs-16, proxy, auth, gotcha |
 | [GA4 Data API on Vercel](systems/ga4-data-api-on-vercel.md) | active | ga4, google-analytics, vercel, auth, gotcha |
+| [M365 SharePoint + Forms gotchas](systems/m365-sharepoint-forms-gotchas.md) | active | m365, sharepoint, microsoft-forms, no-code, gotcha |
 
 ## Projects
 
@@ -44,6 +45,7 @@ What each project does, architecture, gotchas, current state.
 | [ReList](projects/relist.md) | active | vinted, saas, lily |
 | [herbarium-hq](projects/herbarium-hq.md) | active | herbarium, debbie, business-hq |
 | [mytodo](projects/mytodo.md) | active | todo, telegram, voice, gardening |
+| [Capital Programme System](projects/capital-programme-system.md) | active | m365, sharepoint, power-automate, council, no-code |
 
 ## Decisions
 
