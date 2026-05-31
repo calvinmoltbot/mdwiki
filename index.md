@@ -44,6 +44,7 @@ What each project does, architecture, gotchas, current state.
 | [OpenRouter Tracker](projects/openrouter-tracker.md) | active | openrouter, cost-tracking |
 | [ReList](projects/relist.md) | active | vinted, saas, lily |
 | [herbarium-hq](projects/herbarium-hq.md) | active | herbarium, debbie, business-hq |
+| [hdwshopify](projects/hdwshopify.md) | active | shopify, ga4, nextjs, vercel, analytics |
 | [mytodo](projects/mytodo.md) | active | todo, telegram, voice, gardening |
 | [Capital Programme System](projects/capital-programme-system.md) | active | m365, sharepoint, power-automate, council, no-code |
 

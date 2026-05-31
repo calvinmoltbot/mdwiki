@@ -2,7 +2,7 @@
 title: GA4 Data API on Vercel — refresh-token env creds
 tags: [ga4, google-analytics, vercel, auth, adc, oauth, gotcha]
 created: 2026-05-26
-updated: 2026-05-26
+updated: 2026-05-31
 status: active
 sources:
   - hdwshopify/src/lib/ga4.ts
@@ -10,6 +10,7 @@ related:
   - ./gcloud-headless-auth.md
   - ./vercel-deploy-gotchas.md
   - ../patterns/nextjs-single-user-google-auth.md
+  - ../projects/hdwshopify.md
 ---
 
 # GA4 Data API on Vercel — refresh-token env creds
@@ -28,6 +29,29 @@ Authenticate as the **property-owning user** via a refresh token, supplied as en
 3. In code, when those env vars are present, construct an OAuth2/`UserRefreshClient` credential and pass it to `BetaAnalyticsDataClient` (via its `auth`/`authClient` option). When they're absent, fall back to ambient ADC so local dev still works unchanged.
 
 Refresh tokens are **not origin-bound**, so the same token that works locally works on Vercel. If GA4 cards start erroring in prod with an auth message, the likely cause is a **revoked/expired refresh token** — re-mint via the loopback flow and update the env var.
+
+## ⚠️ The 7-day token death (general Google-OAuth gotcha)
+
+If the refresh token starts failing with `invalid_grant` ("Token has been expired
+or revoked") roughly a **week after it was minted**, the root cause is almost
+always that the OAuth **consent screen is in "Testing" publishing status** — Google
+caps refresh tokens at 7 days for Testing-status apps. This is **not GA4-specific**;
+it hits any Google OAuth integration (Gmail, Calendar, Drive, …) using a stored
+refresh token.
+
+**Permanent fix:** GCP console → Google Auth Platform → **Audience → Publish app →
+"In production"** (`console.cloud.google.com/auth/audience?project=<PROJECT>`). For
+an unverified sensitive scope (e.g. `analytics.readonly`), consent then shows a
+one-time "Google hasn't verified this app" warning (Advanced → continue) — harmless
+when you own the client secret. In-production tokens don't hit the 7-day cap; don't
+click "Back to testing".
+
+**Two credential stores — keep in sync.** A re-mint must update **both** the local
+ADC file (`~/.config/gcloud/application_default_credentials.json`) **and** the
+Vercel env var `GA4_REFRESH_TOKEN` — they drift independently. After updating the
+env var, **redeploy** (`vercel redeploy <prod-url>`); env changes only apply to new
+deployments. `client_id`/`client_secret` are unchanged across re-mints (same OAuth
+client). First diagnosed on hdwshopify 2026-05-31 — see [[hdwshopify]].
 
 ## Why a user token, not an SA
 
