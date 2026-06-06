@@ -45,14 +45,20 @@ The gateway is the always-running process that handles messaging:
 
 ## Model Configuration
 
-| Role | Model | Provider |
-|---|---|---|
-| Default | `google/gemma-4-26b-a4b-it` | OpenRouter |
-| Fallback | `deepseek/deepseek-v3.2` | OpenRouter |
+| Role | Model | Provider | Cost ($/M in·out) |
+|---|---|---|---|
+| Default | `google/gemma-4-31b-it:free` | OpenRouter | free |
+| Fallback | `google/gemma-4-26b-a4b-it` | OpenRouter | 0.06 · 0.33 |
 
 Source of truth: `~/.hermes/config.yaml` (`model:` and `fallback_providers:`).
 
-**Smart model routing is currently disabled** (`smart_model_routing.enabled: false`, no `cheap_model` set). The simple-turn thresholds (`max_simple_chars: 160`, `max_simple_words: 28`) are configured but unused until a `cheap_model` is added and routing is enabled.
+**Strategy: cheapest-that-works.** Default is a free OpenRouter model; the paid fallback only fires when the free tier 429s (free `:free` endpoints rate-limit unpredictably). Usage is tiny and input-heavy (~$0.56/mo before the switch, ≈$0 after).
+
+**Avoid `qwen/qwen3-next-80b-a3b-instruct:free`** — it emits tool calls in its own native `<|tool_call>` format, not OpenAI format, so Hermes fails to parse them and the call leaks into the message as raw text (tested 2026-06-06; a `write_file` silently failed). `gemma-4-31b:free` handles tool-calling cleanly. Lesson: validate a candidate model on a real multi-step agent job, not just a one-shot tool test. When changing the default, also update the pin in `~/.hermes/scripts/verify_config.py` or the Config Drift Check cron alerts.
+
+**Smart model routing is disabled** (`smart_model_routing.enabled: false`, no `cheap_model` set). The simple-turn thresholds (`max_simple_chars: 160`, `max_simple_words: 28`) are configured but unused until a `cheap_model` is added and routing is enabled.
+
+> ⚠️ ChatGPT Pro (consumer subscription) **cannot** drive Hermes — no API access; separate product/billing. OpenAI models are reachable via OpenRouter if needed.
 
 ## Telegram Integration
 
