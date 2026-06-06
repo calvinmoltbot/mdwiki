@@ -2,7 +2,7 @@
 title: Hermes Agent
 tags: [hermes, agent, infrastructure]
 created: 2026-04-06
-updated: 2026-04-07
+updated: 2026-06-06
 status: active
 related:
   - projects/the-bridge.md
@@ -47,11 +47,12 @@ The gateway is the always-running process that handles messaging:
 
 | Role | Model | Provider |
 |---|---|---|
-| Default | `google/gemini-2.5-flash` | OpenRouter |
+| Default | `google/gemma-4-26b-a4b-it` | OpenRouter |
 | Fallback | `deepseek/deepseek-v3.2` | OpenRouter |
-| Simple messages | `qwen/qwen3.6-plus:free` | OpenRouter |
 
-Smart routing sends simple turns (<160 chars, <28 words) to the free model.
+Source of truth: `~/.hermes/config.yaml` (`model:` and `fallback_providers:`).
+
+**Smart model routing is currently disabled** (`smart_model_routing.enabled: false`, no `cheap_model` set). The simple-turn thresholds (`max_simple_chars: 160`, `max_simple_words: 28`) are configured but unused until a `cheap_model` is added and routing is enabled.
 
 ## Telegram Integration
 
