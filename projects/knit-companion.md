@@ -32,11 +32,21 @@ The original MVP models a pattern as a **dumb PDF**: page number, a draggable ro
 band (per page), and flat manual counters (`Counter` with optional `target`/`wrapAt`). That
 still works and is the fallback.
 
-Layered on top (optional, additive — committed Jun 2026, PR #10) is a **structured
+Layered on top (optional, additive — merged Jun 2026, PR #10) is a **structured
 `Pattern`** in `lib/types.ts`: the app can offer size-aware instructions, section
 navigation, charts, and a glossary instead of just a PDF. A `Project` gains optional
 `pattern` / `selectedSize` / `position`; absent = PDF-only behaviour. Helpers
 (`resolveSize`, `formatSized`, `renderLine`, `validatePatternSizing`) live in `lib/pattern.ts`.
+
+The **viewer** that renders this (issue #8, PR #11) is `components/PatternViewer.tsx` —
+a pure/controlled component (caller owns `selectedSize`). It does the size picker,
+size-resolved meta/measurements, `appliesToSizes` variant filtering (the "only show me
+my size" win), token highlighting (selected size bold, others dimmed), per-size `repeat`
+summaries, "at the same time" badges, chart/stitch-pattern reference chips, and
+tap-to-define glossary. Reached today via `app/pattern/[id]/page.tsx`, a sample-only
+route over `SAMPLE_PATTERNS` that owns `selectedSize` in localStorage (samples aren't DB
+projects); the component is built to later drop into the real project page driven by
+`Project.selectedSize`. Charts render as *references* only — grids are #4.
 
 ## The core design insight: sizing is not one thing
 
@@ -77,5 +87,11 @@ grid, and `PatternMeta` (construction, skill level, notions, gauge, measurements
 
 The structured model reframes most open issues as facets of one thing: #4/#5 (charts —
 grid + recognition), #6 ("at the same time" → parallel sections), #7 (magic markers →
-glossary refs / `LineToken`), #8 (size picker + structured viewer — the next build), #1
-(PWA/offline). Dev-only target for all of these is the `SAMPLE_PATTERNS` registry.
+glossary refs / `LineToken`), #1 (PWA/offline). Dev-only target for all of these is the
+`SAMPLE_PATTERNS` registry.
+
+**#8 (size picker + structured viewer) landed** in PR #11 (Jun 2026). It surfaced a
+follow-up, **#12**: most per-stitch fixture lines are still plain `text` (not tokenized),
+so the full printed run shows inline — the viewer's "only my size" win currently comes
+mainly from `appliesToSizes` filtering + per-size meta/repeat resolution. #12 is to
+tokenize those lines (or parse runs) so non-selected sizes collapse inline.
