@@ -8,6 +8,7 @@ sources:
   - mytodo/src/app/actions.ts (the bug that found this)
 related:
   - ../projects/mytodo.md
+  - ../projects/knit-companion.md
 ---
 
 # Next.js `"use server"` — exports rule

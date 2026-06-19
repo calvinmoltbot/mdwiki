@@ -2,7 +2,7 @@
 title: mdwiki Index
 tags: [meta]
 created: 2026-04-06
-updated: 2026-05-26
+updated: 2026-06-19
 status: active
 ---
 
@@ -47,6 +47,7 @@ What each project does, architecture, gotchas, current state.
 | [hdwshopify](projects/hdwshopify.md) | active | shopify, ga4, nextjs, vercel, analytics |
 | [mytodo](projects/mytodo.md) | active | todo, telegram, voice, gardening |
 | [Capital Programme System](projects/capital-programme-system.md) | active | m365, sharepoint, power-automate, council, no-code |
+| [Knit Companion](projects/knit-companion.md) | active | nextjs, react, pwa, indexeddb, pdfjs, knitting, data-model |
 
 ## Decisions
 
