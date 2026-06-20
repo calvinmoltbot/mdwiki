@@ -3,7 +3,7 @@ title: Knit Companion — pattern-following PWA
 created: 2026-06-19
 updated: 2026-06-20
 status: active
-tags: [nextjs, react, typescript, pwa, indexeddb, pdfjs, knitting, data-model]
+tags: [nextjs, react, typescript, pwa, indexeddb, pdfjs, knitting, data-model, vercel]
 related:
   - ../patterns/nextjs-use-server-export-rule.md
 ---
@@ -13,7 +13,11 @@ related:
 A web app for **following knitting patterns** — load a pattern PDF, track your place,
 and count rows. Local-first PWA: everything lives in the browser, no backend.
 
-Local path: `~/Dev/Projects/knit-companion`. Repo: `calvinmoltbot/knit-companion`.
+Local path: `~/Dev/Projects/knit-companion`. Repo: `calvinmoltbot/knit-companion` (**private**).
+**Live (deployed 2026-06-20): https://knit-companion.vercel.app** — Vercel project `knit-companion`
+under team *Calvin Orr's projects* (`calvin-orrs-projects`), GitHub-connected so **push to `main`
+auto-deploys**. Shipped **public, no auth**, but deliberately carries **nothing copyrighted** (see #9)
+— it's an installable offline PWA (add-to-home-screen).
 For live feature state use `gh issue list --repo calvinmoltbot/knit-companion` — not this page.
 
 ## Stack
@@ -71,11 +75,22 @@ grid, and `PatternMeta` (construction, skill level, notions, gauge, measurements
 
 ## Gotchas / hard rules
 
-- **Sample PDFs are copyrighted** ("personal use only — no distribution"). They are
-  **gitignored** (`/public/samples/*.pdf`), kept local as dev fixtures only, and must never
-  be bundled or deployed (Next would serve them at `/samples/*.pdf`). Ship freely-licensed
-  samples before any public deploy (issue #9). The structured `.ts` fixtures are full
-  transcriptions — treat as a dev/test corpus, not shippable content.
+- **Copyrighted content is dev-only and never ships** (issue #9, SOLVED — PR #19, `12fbb5c`).
+  The sample PDFs are **gitignored** (`/public/samples/*.pdf`) and the three hand-transcribed
+  `.ts` fixtures (Summer Sorrel / Veronya Warmer / Snowbird) were always a **dev/test
+  regression corpus, not shippable content**. #9 was resolved not by replacing them but by
+  **excluding them from the shipped bundle**: `lib/fixtures/index.ts` loads them via `require()`
+  inside a compile-time-false `if (process.env.NODE_ENV !== "production")` block, so **webpack
+  drops the branch *and* the pattern data from the dependency graph** in production *and* preview
+  builds (not mere terser dead-code stripping — the modules never get bundled). Only the
+  public-domain **Traditional Stitch Sampler** ships. `npm run dev` and the tsx
+  `validatePatternSizing` scripts still see the full 4-pattern corpus; `next build` sees only the
+  sampler. A user's **own paid patterns** are uploaded at runtime into their **browser
+  IndexedDB** (PDF-mode) — never committed, never served — so personal use of paid patterns is
+  fully supported with zero distribution. Verified: production build + the **live URL** scanned
+  → **0** copyrighted strings in any client-served JS, server runtime `.js`, or prerendered
+  HTML/RSC (`/pattern/summer-sorrel` renders "not found"); only server-side `.js.map` source maps
+  retain references, and Vercel never serves those over HTTP.
 - **Fixture numbers are hand-transcribed** from the PDFs — good as a regression corpus,
   verify against source before relying on any number for actual knitting.
 - **Big chart grids are left un-transcribed** on purpose (Snowbird, Summer Sorrel) — the
@@ -94,6 +109,21 @@ grid, and `PatternMeta` (construction, skill level, notions, gauge, measurements
   by doing exactly this). The worktree must live *inside* the repo and symlink to the repo's own
   `node_modules` — a `node_modules` symlink pointing outside the worktree root makes `next build`
   (Turbopack, the Next 16 default) fail with "Symlink … points out of the filesystem root".
+- **Vercel Pro cannot SSO-protect a STABLE production domain** (deploy finding, 2026-06-20).
+  Goal was a *private* deploy; on the **Pro plan, Vercel Authentication only gates ephemeral
+  per-deployment URLs (`*-<hash>-team.vercel.app`) and previews** — not the stable alias. The API
+  accepts `ssoProtection.deploymentType = "prod_deployment_urls_and_all_previews"` but
+  `knit-companion.vercel.app` stayed public (HTTP 200); `deploymentType:"all"` returns
+  `invalid_sso_protection: "Vercel Authentication is not available on your plan for production
+  deployments"`. Protecting the stable production domain (SSO or password) is effectively an
+  Enterprise/paid-add-on capability. **Decision:** for a personal app the clean answer was to ship
+  with **nothing copyrighted** and deploy fully public (no auth) rather than pay for production
+  protection — if you ever NEED a truly private stable URL on Pro, the built-in options won't do it
+  (budget for an add-on or put your own auth in front). Mechanics: deploy-protection is set via
+  `PATCH https://api.vercel.com/v9/projects/{projectId}?teamId={teamId}` with `{"ssoProtection":
+  {...}}` or `null`; CLI auth token lives at
+  `~/Library/Application Support/com.vercel.cli/auth.json` (JSON `.token`). Project
+  `prj_hqJd2GJJlhketHQMl9BoyQHpFS56`, team `team_Yf67ml5pwRjxxS7KU2XSBwI6`.
 
 ## Benchmark: knitCompanion (the app we're emulating)
 
@@ -186,15 +216,15 @@ navigation fallback offline. **Excludes the copyrighted `/public/samples/*.pdf` 
 precache** (see gotchas). Device verification (iOS Safari / Android Chrome add-to-home,
 airplane-mode reload) is still owed.
 
-### State & next steps (2026-06-20 evening)
-The core knitCompanion loop (chart grid + row band + one-tap + markers + magic counters over
-a size-aware `Pattern`) plus the **knit anywhere** (offline PWA) and **markup** (scribble)
-signatures are all in. Closed today: #1, #2, #12 (plus #4, #7, #8 earlier).
+### State & next steps (2026-06-20 evening) — DEPLOYED + private-content cleared
+The app is **live** at https://knit-companion.vercel.app. The core knitCompanion loop (chart grid +
+row band + one-tap + markers + magic counters over a size-aware `Pattern`) plus the **knit anywhere**
+(offline PWA) and **markup** (scribble) signatures are all in. **Closed today: #1, #2, #4, #7, #8,
+#9, #12** (and #6). The stale `feature/rich-pattern-model` branch was deleted; **only `main`
+remains**.
 
-- **#6** ("at the same time" reminders → parallel sections) — *in progress*, a PR is being
-  opened in parallel; may close shortly.
-- **#9** (replace copyrighted sample PDFs) — **gates any public deploy**; content/licensing
-  call. The SW already refuses to cache the samples, but they still can't ship.
+Two issues open:
+
+- **#5** (chart recognition from a PDF region) — the realistic path to fill the big empty grids
+  (Snowbird, Summer Sorrel) left un-transcribed on purpose; **needs a design decision**.
 - **#3** (Ravelry / Dropbox import) — blocked on OAuth creds.
-- **#5** (chart recognition from a PDF region) — the realistic path to fill the big empty
-  grids (Snowbird, Summer Sorrel) left un-transcribed on purpose; needs a design decision.
