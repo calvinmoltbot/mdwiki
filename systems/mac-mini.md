@@ -2,11 +2,12 @@
 title: Mac Mini Setup
 tags: [infrastructure, networking, hardware]
 created: 2026-04-06
-updated: 2026-04-06
+updated: 2026-06-22
 status: active
 related:
   - ../systems/claude-code.md
   - ../systems/markviewer.md
+  - ../systems/local-models-ollama.md
   - ../reference/accounts-and-services.md
 ---
 
