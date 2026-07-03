@@ -1,8 +1,10 @@
 ---
 title: ReList — Vinted Reseller SaaS
 created: 2026-04-09
-updated: 2026-04-24
+updated: 2026-07-03
 tags: [vinted, saas, reselling, lily]
+related:
+  - ../patterns/db-forensics-user-data-discrepancy.md
 ---
 
 # ReList
@@ -19,6 +21,8 @@ Two separate repos/deploys:
 | `calvinmoltbot/relist` | Phase 2 — SaaS app (inventory, deals, pricing) | relist.warmwetcircles.com |
 
 For live feature state and priorities, use `gh issue list` — not this page.
+
+Dedup fix (2026-07-03, PR #55, branch `fix/inventory-dedup-name-collision`): `POST /api/inventory` used to dedup on case-insensitive item **name**, silently merging a new listing into *any* same-named row — including `sold`/`shipped` history and rows tied to a different Vinted URL — returning `200 {updated:true}` so the extension showed a false "Added!". Lily's names are heavily templated (multiple `"... sequin hanky hem cami"`), so re-listed items could vanish. Now keys on **Vinted URL** (exact) and only falls back to name-matching against active (`sourced`/`listed`) rows with no URL. See [db-forensics pattern](../patterns/db-forensics-user-data-discrepancy.md) for how it was diagnosed. Same session: backfilled 35 live listings that had never been logged (listed 5→40). Two pre-existing test bugs filed: #53 (dashboard revenue date-boundary), #54 (flaky Neon timeouts).
 
 Dashboard redesign (2026-04-12): "Today's Flow" kanban (Ship / Update / Review) on left, Performance panel on right with real 7-day sparkline + rolling 7-day-vs-weekly-target pace card. Daily-plan data folded into `/api/dashboard` for single round trip. Markup scratchpad (2026-04-13) sits under the kanban — cost input + markup slider with 100/150/200/300% presets → list price & profit.
 
