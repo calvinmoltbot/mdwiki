@@ -2,14 +2,21 @@
 title: STFC Companion
 type: project
 repo: calvinmoltbot/stfc
+url: https://stfc.warmwetcircles.com
 created: 2026-06-12
-updated: 2026-06-12
+updated: 2026-07-04
 tags: [nextjs, game-tools, recommender]
 ---
 
 # STFC Companion
 
 Roster-aware crew recommender for Star Trek Fleet Command. Calvin owns ~258 of 287 officers and always struggled to pick crews; this app recommends captain+bridge+below-decks per situation (hostile grind, PvP, armadas, mining…) and per specific ship.
+
+## Deploy
+
+- **Live: https://stfc.warmwetcircles.com** — Vercel project `stfc` under team `calvin-orrs-projects`, connected to the `calvinmoltbot/stfc` GitHub repo. Merges to `main` auto-deploy (~1 min). Wired up 2026-07-04.
+- Static/localStorage app — no backend, no env vars, no secrets. `next build` on Next 16 (Vercel default bundler is fine in prod; the `--webpack` flag in `npm run dev` is only to dodge the Turbopack cross-origin dev-server hang over Tailscale, not a prod concern).
+- Data reaches prod only via the committed `src/data/` bundle, so the bimonthly Data Refresh PR → merge → deploy is the update path.
 
 ## Stack & layout
 
